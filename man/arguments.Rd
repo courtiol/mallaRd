@@ -4,13 +4,13 @@
 \alias{arguments}
 \title{Definition of the function arguments}
 \arguments{
-\item{lat1}{The latitude of point 1.}
+\item{lat1}{the latitude of point 1}
 
-\item{long1}{The longitude of point 1.}
+\item{lat2}{the latitude of point 2}
 
-\item{lat2}{The latitude of point 2.}
+\item{long1}{the longitude of point 1}
 
-\item{long2}{The longitude of point 2.}
+\item{long2}{the longitude of point 2}
 }
 \description{
 Here is the list of most function arguments used in the package.
