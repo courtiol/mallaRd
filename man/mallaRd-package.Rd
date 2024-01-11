@@ -5,19 +5,33 @@
 \alias{mallaRd-package}
 \alias{_PACKAGE}
 \alias{mallaRd}
-\title{mallaRd: Breeding output and breeding site fideliy of mallards in Berlin, Germany}
+\title{mallaRd: Breeding output and breeding site fidelity of mallards in Berlin, Germany}
 \description{
 This help page reproduces, in the section \strong{Examples} the analyses and results from the paper
 "Housing search in the concrete jungle – breeding site selection of urban mallards and
 implications for conservation management strategies" by Engler et al.
 }
+\details{
+Note that the workflow relies on functions from other packages (e.g. \pkg{dplyr}), but we reexported
+these functions so you don't have to load these packages as long as \strong{mallaRd} is loaded. If
+you want to expand upon the proposed workflow and require more functions, you will however have
+to load such packages explicitly.
+}
 \examples{
 ## Loading the raw data
-read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
+rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
+head(rawdata)
+
+## Formatting the data
+rawdata |>
+  mutate(date = as.Date(.data$date, format = c("\%d.\%m.\%Y"))) |>
+  mutate(across(where(is.character), as.factor)) -> duck
+
+str(duck)
 
 }
 \references{
-to come
+reference will be added once the paper is published
 }
 \author{
 \strong{Maintainer}: Alexandre Courtiol \email{alexandre.courtiol@gmail.com} (\href{https://orcid.org/0000-0003-0637-2959}{ORCID})

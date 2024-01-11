@@ -1,6 +1,6 @@
 Package: mallaRd
 Type: Package
-Title: Breeding output and breeding site fideliy of mallards in Berlin, Germany 
+Title: Breeding output and breeding site fidelity of mallards in Berlin, Germany 
 Version: 0.1.0
 Authors@R: c(
     person("Alexandre", "Courtiol", email = "alexandre.courtiol@gmail.com", role = c("aut", "cre"),
@@ -12,7 +12,10 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    readxl,
+    dplyr,
     sf
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
+Suggests: 
+    spelling
+Language: en-US
