@@ -1,0 +1,47 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+
+# mallaRd
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of mallaRd is to reproduces the analyses and results from the paper "Housing search in the concrete jungle – breeding site selection of urban mallards and implications for conservation management strategies" by Engler et al. (in prep). 
+
+## Installation and usage
+
+You can install our package mallaRd from [GitHub](https://github.com/) with:
+
+```{r, eval=FALSE}
+install.packages("remotes") ## install the package remotes if you don't have it
+remotes::install_github("courtiol/mallaRd") ## install our package
+```
+
+Then load the package in your R session and check the main help page where we placed all analyses:
+
+```{r, eval=FALSE}
+load("mallaRd")
+?mallaRd
+```
+
+## Developer corner
+
+Here is the information of the environment we used to run all the analyses.
+
+```{r, eval=TRUE}
+sessionInfo()
+```
+
