@@ -32,7 +32,7 @@ load("mallaRd")
 ## Developer corner
 
 Here is the information of the environment we used to run all the
-analyses.
+analyses:
 
 ``` r
 sessionInfo()
