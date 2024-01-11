@@ -1,11 +1,12 @@
 Package: mallaRd
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Breeding output and breeding site fideliy of mallards in Berlin, Germany 
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: c(
+    person("Alexandre", "Courtiol", email = "alexandre.courtiol@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-0637-2959")),
+    person("Marc", "Engler", role = "aut", comment = c(ORCID = "0000-0002-3461-0953")),
+Description: Reproduces the analyses and results from the paper "Housing search in the concrete jungle – breeding site selection of urban mallards and implications for conservation management strategies" by Engler et al. 
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
