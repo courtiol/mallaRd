@@ -29,6 +29,11 @@ load("mallaRd")
 ?mallaRd
 ```
 
+## Raw data
+
+You can access the raw data used for the paper
+[here](inst/extdata/raw_data.csv) or via the R package.
+
 ## Developer corner
 
 Here is the information of the environment we used to run all the
