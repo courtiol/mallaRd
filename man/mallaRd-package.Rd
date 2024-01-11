@@ -12,7 +12,8 @@ This help page reproduces, in the section \strong{Examples} the analyses and res
 implications for conservation management strategies" by Engler et al.
 }
 \examples{
-1 + 1
+## Loading the raw data
+read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
 
 }
 \references{

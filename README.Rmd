@@ -1,5 +1,7 @@
 ---
-output: github_document
+output:
+  github_document:
+    df_print: kable
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -39,7 +41,12 @@ load("mallaRd")
 
 ## Raw data
 
-You can access the raw data used for the paper [here](inst/extdata/raw_data.csv) or via the R package.
+You can access the raw data used for the paper [here](inst/extdata/raw_data.csv) or via the R package:
+
+```{r, eval=TRUE}
+rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
+head(rawdata) ## first 6 rows
+```
 
 ## Developer corner
 

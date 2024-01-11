@@ -32,7 +32,25 @@ load("mallaRd")
 ## Raw data
 
 You can access the raw data used for the paper
-[here](inst/extdata/raw_data.csv) or via the R package.
+[here](inst/extdata/raw_data.csv) or via the R package:
+
+``` r
+rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
+head(rawdata) ## first 6 rows
+```
+
+<div class="kable-table">
+
+|  id | year | date       | species      | breeding_site_lat | breeding_site_long | habitat_type | floor_level | hatch_date | clutch_size | brood_size | ring_number | body_mass_g | wing_length_mm | release_site_lat | release_site_long |     DNSW | PSW1000 | PSW2000 | trafficvolume500 | populationdensity500 | trafficvolume1000 | populationdensity1000 | trafficvolume2000 | populationdensity2000 |
+|----:|-----:|:-----------|:-------------|------------------:|-------------------:|:-------------|------------:|:-----------|------------:|-----------:|:------------|------------:|---------------:|-----------------:|------------------:|---------:|--------:|--------:|-----------------:|---------------------:|------------------:|----------------------:|------------------:|----------------------:|
+|   1 | 2005 | 01.04.2005 | mallard_duck |          52.52495 |           13.30129 | courtyard    |          NA |            |          NA |         NA | JC8002      |          NA |             NA |         52.54819 |          13.31221 | 276.1204 |       0 |       1 |        1018.6459 |            143.70396 |        1679.24304 |              88.71829 |         1297.3898 |              93.85891 |
+|   2 | 2005 | 04.04.2005 | mallard_duck |          52.60742 |           13.23319 | other        |          NA |            |          NA |          1 |             |          NA |             NA |               NA |                NA | 929.5084 |       1 |       1 |         158.7811 |             25.50148 |          72.82336 |              23.18329 |          131.7400 |              14.51628 |
+|   3 | 2005 | 25.04.2005 | mallard_duck |          52.52412 |           13.34539 | roof_terrace |          NA |            |          NA |          8 |             |          NA |             NA |               NA |                NA | 127.3921 |       0 |       1 |         843.3160 |            127.61779 |         743.98803 |             147.67042 |          858.6173 |              78.80484 |
+|   4 | 2005 | 25.04.2005 | mallard_duck |          52.52412 |           13.34539 | roof_terrace |          NA |            |          NA |          8 |             |          NA |             NA |               NA |                NA | 127.3921 |       0 |       1 |         843.3160 |            127.61779 |         743.98803 |             147.67042 |          858.6173 |              78.80484 |
+|   5 | 2005 | 25.04.2005 | mallard_duck |          52.52412 |           13.34539 | roof_terrace |          NA |            |          NA |          8 |             |          NA |             NA |               NA |                NA | 127.3921 |       0 |       1 |         843.3160 |            127.61779 |         743.98803 |             147.67042 |          858.6173 |              78.80484 |
+|   6 | 2005 | 25.04.2005 | mallard_duck |          52.52412 |           13.34539 | roof_terrace |          NA |            |          NA |          8 |             |          NA |             NA |               NA |                NA | 127.3921 |       0 |       1 |         843.3160 |            127.61779 |         743.98803 |             147.67042 |          858.6173 |              78.80484 |
+
+</div>
 
 ## Developer corner
 

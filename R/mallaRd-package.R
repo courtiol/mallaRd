@@ -11,6 +11,8 @@
 #' @references to come
 #'
 #' @examples
-#' 1 + 1
+#' ## Loading the raw data
+#' rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
+#' str(rawdata)
 #'
 "_PACKAGE"
