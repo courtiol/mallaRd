@@ -11,6 +11,8 @@
 \item{long1}{the longitude of point 1}
 
 \item{long2}{the longitude of point 2}
+
+\item{rawdata}{the data frame containing the raw data}
 }
 \description{
 Here is the list of most function arguments used in the package.

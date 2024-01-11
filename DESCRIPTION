@@ -14,7 +14,9 @@ LazyData: true
 Imports: 
     dplyr,
     sf,
-    tibble
+    tibble,
+    tidyr,
+    tidyselect
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Suggests: 

@@ -13,4 +13,5 @@
 #' @param lat2 the latitude of point 2
 #' @param long1 the longitude of point 1
 #' @param long2 the longitude of point 2
+#' @param rawdata the data frame containing the raw data
 NULL

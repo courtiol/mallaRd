@@ -17,21 +17,90 @@
 #'
 #' @examples
 #' ## Loading the raw data
+#'
 #' rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
 #' head(rawdata)
 #'
+#'
 #' ## Formatting the data
+#'
 #' rawdata |>
 #'   as_tibble() |>
-#'   mutate(date = as.Date(.data$date, format = c("%d.%m.%Y"))) |>
+#'   mutate(date = as.Date(.data$date, format = c("%d.%m.%Y")),
+#'          ring_number = ifelse(.data$ring_number == "", NA, .data$ring_number)) |>
 #'   mutate(across(where(is.character), as.factor)) -> duck_all
 #'
 #' duck_all
 #'
-#' ## Removing ducks that were only observed once
-#' duck_all |>
-#'   filter(n() > 1, .by = "ring_number") -> duck_reobs
 #'
-#' duck_reobs
+#' ## Summary statistics for the full dataset
+#'
+#' ### total number of breeding events
+#' nrow(duck_all)
+#' # [1] 1734
+#'
+#' ### breeding events from identified (ringed)  ducks
+#' sum(!is.na(duck_all$ring_number))
+#' # [1] 1213
+#'
+#' ### total number of identified (ringed) ducks
+#' length(levels(duck_all$ring_number))
+#' # [1] 810
+#'
+#' ### total number of years
+#' length(unique(duck_all$year))
+#' # [1] 16
+#'
+#' ### breeding events for which floor level known
+#' sum(!is.na(duck_all$floor_level))
+#' # [1] 100
+#'
+#' ### pct of breeding events for which floor level known
+#' round(100*(sum(!is.na(duck_all$floor_level))/nrow(duck_all)))
+#' # [1] 6
+#'
+#' ### number of recaptures (only possible for identified ducks)
+#' duck_all |>
+#'   filter(!is.na(.data$ring_number)) |>
+#'   summarise(recapture_nb = n() - 1, .by = "ring_number") |>
+#'   pull(recapture_nb) |>
+#'   sum()
+#' # [1] 403
+#'
+#'
+#' ## Reformatting the data for statistical modelling retaining only observations for which all
+#' ## predictors used for modelling are available
+#'
+#' data_model <- prepare_data(duck_all)
+#' # Information on data filtering
+#' # # A tibble: 8 × 7
+#' #   description                                             breeding_events_removed remaining_events delta_events_pct ducks_removed remaining_ducks delta_duck_pct
+#' #   <chr>                                                                     <dbl>            <int>            <dbl>         <dbl>           <int>          <dbl>
+#' # 1 raw data                                                                      0             1734            0                 0             810          0
+#' # 2 removed because unknown ducks                                               521             1213           30.0               0             810          0
+#' # 3 removed because only observed once                                          581              632           33.5             581             229         71.7
+#' # 4 removed because of reshaping the data                                         0              632            0                 0             229          0
+#' # 5 removed because first occurrence per duck not used                          229              403           13.2               0             229          0
+#' # 6 removed because recapture events more than 1 year apart                      91              312            5.25             42             187          5.19
+#' # 7 removed because of missing values for predictors                             10              302            0.577             6             181          0.741
+#' # 8 final number of rows                                                        302              302           17.4               0             181          0
+#'
+#' ### check that recapture events are sufficiently spaced out
+#' sort(data_model$delta_time) ## values below 40 look suspicious
+#' data_model |>
+#'   filter(delta_time < 40) |> ## FIXME
+#'   select("year", "ring_number", "date", "date_previous", "delta_time")
+#'
+#' ### total number of breeding events (nrow + 1/duck)
+#' nrow(data_model) + length(unique(data_model$ring_number))
+#' # [1] 483
+#'
+#' ### total number of recapture events
+#' nrow(data_model)
+#' # [1] 302
+#'
+#' ### total number of ducks complete dataset
+#' length(unique(data_model$ring_number))
+#' # [1] 181
 #'
 "_PACKAGE"
