@@ -22,9 +22,16 @@
 #'
 #' ## Formatting the data
 #' rawdata |>
+#'   as_tibble() |>
 #'   mutate(date = as.Date(.data$date, format = c("%d.%m.%Y"))) |>
-#'   mutate(across(where(is.character), as.factor)) -> duck
+#'   mutate(across(where(is.character), as.factor)) -> duck_all
 #'
-#' str(duck)
+#' duck_all
+#'
+#' ## Removing ducks that were only observed once
+#' duck_all |>
+#'   filter(n() > 1, .by = "ring_number") -> duck_reobs
+#'
+#' duck_reobs
 #'
 "_PACKAGE"

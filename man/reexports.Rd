@@ -4,8 +4,11 @@
 \name{reexports}
 \alias{reexports}
 \alias{across}
+\alias{filter}
 \alias{mutate}
+\alias{n}
 \alias{where}
+\alias{as_tibble}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -13,6 +16,8 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr:reexports]{where}}}
+  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{filter}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr:context]{n}}, \code{\link[dplyr:reexports]{where}}}
+
+  \item{tibble}{\code{\link[tibble]{as_tibble}}}
 }}
 

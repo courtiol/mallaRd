@@ -13,7 +13,8 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
-    sf
+    sf,
+    tibble
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Suggests: 
