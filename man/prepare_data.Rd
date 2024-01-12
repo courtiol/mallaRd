@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_data.R
 \name{prepare_data}
 \alias{prepare_data}
-\title{Reformatting the data for statistical modelling}
+\title{Filtering and reformatting the data for statistical modelling}
 \usage{
 prepare_data(rawdata)
 }
@@ -13,7 +13,9 @@ prepare_data(rawdata)
 a dataframe with the data ready for modeling
 }
 \description{
-Reformatting the data for statistical modelling
+This functions perform a series of data filtering steps. It also express predictors as
+differences between a capture event and the previous capture. Check the body of the function to
+see all steps in details.
 }
 \examples{
 #see ?mallaRd

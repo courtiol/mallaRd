@@ -28,6 +28,7 @@
 #'   as_tibble() |>
 #'   mutate(date = as.Date(.data$date, format = c("%d.%m.%Y")),
 #'          ring_number = ifelse(.data$ring_number == "", NA, .data$ring_number)) |>
+#'   mutate(across(c("PSW1000", "PSW2000"), \(x) factor(ifelse(x == 0, "no", "yes")))) |>
 #'   mutate(across(where(is.character), as.factor)) -> duck_all
 #'
 #'

@@ -1,4 +1,8 @@
-#' Reformatting the data for statistical modelling
+#' Filtering and reformatting the data for statistical modelling
+#'
+#' This functions perform a series of data filtering steps. It also express predictors as
+#' differences between a capture event and the previous capture. Check the body of the function to
+#' see all steps in details.
 #'
 #' @inheritParams arguments
 #' @return a dataframe with the data ready for modeling
@@ -66,7 +70,7 @@ prepare_data <- function(rawdata) {
     dplyr::filter(.data$delta_season != "more than one breeding season apart") -> data_for_model_5 ## remove recapture event too far apart in time
 
   data_for_model_5 |>
-    tidyr::drop_na("ring_number", "delta_time",
+    tidyr::drop_na("ring_number", "delta_season",
             "delta_distance", "relocation_distance",
             "breeding_site_lat_previous", "breeding_site_long_previous",
             "breeding_site_long", "breeding_site_lat", "breeding_site_ID",
@@ -78,12 +82,25 @@ prepare_data <- function(rawdata) {
     dplyr::mutate(stay = .data$delta_distance < 20,
                   PSW1000_previous_f = as.factor(.data$PSW1000_previous),
                   PSW2000_previous_f = as.factor(.data$PSW2000_previous)) |>   ## if distance is under 20m, we consider ducks to go back to same place
-    # mutate(across(c(brood_size_previous, DNSW_previous,
-    #                 trafficvolume500_previous, populationdensity500_previous,
-    #                 trafficvolume1000_previous, populationdensity1000_previous,
-    #                 trafficvolume2000_previous, populationdensity2000_previous
-    #                 ), .fns = \(x) scale(x)[, 1], .names = "{.col}_z")) |>  ## TODO: remove scaling
-    as.data.frame() -> data_for_model
+    dplyr::mutate(dplyr::across(c("brood_size_previous",
+                                  "relocation_distance",
+                                  "DNSW_previous",
+                                  "trafficvolume500_previous", "trafficvolume1000_previous", "trafficvolume2000_previous",
+                                  "populationdensity500_previous", "populationdensity1000_previous", "populationdensity2000_previous"),
+                                .fns = \(x) scale(x)[, 1], .names = "{.col}_z")) |>
+    dplyr::select("ring_number", "date", "delta_season",
+                  "breeding_site_lat", "breeding_site_long", "breeding_site_ID",
+                  "brood_size_previous", "brood_size_previous_z",
+                  "relocation_distance", "relocation_distance_z",
+                  "DNSW_previous", "DNSW_previous_z",
+                  "PSW1000_previous", "PSW2000_previous",
+                  "trafficvolume500_previous", "trafficvolume500_previous_z",
+                  "trafficvolume1000_previous", "trafficvolume1000_previous_z",
+                  "trafficvolume2000_previous", "trafficvolume2000_previous_z",
+                  "populationdensity500_previous", "populationdensity500_previous_z",
+                  "populationdensity1000_previous", "populationdensity1000_previous_z",
+                  "populationdensity2000_previous", "populationdensity2000_previous_z") |>
+    droplevels() -> data_for_model
 
   # describe discarded data
   res <- tibble::tibble(description = c("raw data",
@@ -135,7 +152,7 @@ prepare_data <- function(rawdata) {
   print(res)
   cat("\n")
 
-  tibble::as_tibble(droplevels(data_for_model))
+  data_for_model
 }
 
 
