@@ -9,9 +9,13 @@
 # Reminder for developers: sort by alphabetical order, single line, use points as delimiter, no cap, no final point. #
 ######################################################################################################################
 #'
+#' @param data the dataframe containing the data used for model fitting
+#' @param fit a fitted model
+#' @param formulas the dataframe of formulas created with `prepare_formulas()`
 #' @param lat1 the latitude of point 1
 #' @param lat2 the latitude of point 2
 #' @param long1 the longitude of point 1
 #' @param long2 the longitude of point 2
+#' @param ncpus the number of CPU cores to use for parallel processing (default = 2)
 #' @param rawdata the data frame containing the raw data
 NULL

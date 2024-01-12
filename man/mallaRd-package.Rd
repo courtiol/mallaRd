@@ -82,6 +82,10 @@ data_model <- prepare_data(duck_all)
 # 7 removed because of missing values for predictors                             10              300            0.577             6             180          0.741
 # 8 final number of rows                                                        300              300           17.3               0             180          0
 
+## for developer only: save the created data into the package
+# usethis::use_data(data_model, overwrite = TRUE)
+
+
 ### total number of breeding events (nrow + 1/duck)
 nrow(data_model) + length(unique(data_model$ring_number))
 # [1] 480
@@ -111,11 +115,14 @@ range(cor_matrix, na.rm = TRUE)
 
 ## Prepare formulas for model fits
 
-formula_df <- prepare_formula()
+formula_df <- prepare_formulas()
 
 ### number of different models to fit
 nrow(formula_df)
 #[1] 4096
+
+
+##
 
 }
 \references{

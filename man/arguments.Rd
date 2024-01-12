@@ -4,6 +4,12 @@
 \alias{arguments}
 \title{Definition of the function arguments}
 \arguments{
+\item{data}{the dataframe containing the data used for model fitting}
+
+\item{fit}{a fitted model}
+
+\item{formulas}{the dataframe of formulas created with \code{prepare_formulas()}}
+
 \item{lat1}{the latitude of point 1}
 
 \item{lat2}{the latitude of point 2}
@@ -11,6 +17,8 @@
 \item{long1}{the longitude of point 1}
 
 \item{long2}{the longitude of point 2}
+
+\item{ncpus}{the number of CPU cores to use for parallel processing (default = 2)}
 
 \item{rawdata}{the data frame containing the raw data}
 }

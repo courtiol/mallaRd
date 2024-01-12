@@ -4,9 +4,9 @@
 #' @export
 #'
 #' @examples
-#' prepare_formula()
+#' prepare_formulas()
 #'
-prepare_formula <- function() {
+prepare_formulas <- function() {
 
   base_formula <- "return ~ "
 
@@ -23,7 +23,7 @@ prepare_formula <- function() {
                                                     "populationdensity1000_previous_z",
                                                     "populationdensity2000_previous_z",
                                                     ""),
-                             brood_size = c("brood_size_z", ""),
+                             brood_size = c("brood_size_previous_z", ""),
                              breeding_season = c("delta_season", ""),
                              relocation_distance = c("relocation_distance_z", ""),
                              random = c("(1 | individual_ID)",

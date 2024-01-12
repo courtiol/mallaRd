@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_data.R
 \name{prepare_data}
 \alias{prepare_data}
-\title{Filtering and reformatting the data for statistical modelling}
+\title{Filtering and reformatting the data for statistical modeling}
 \usage{
 prepare_data(rawdata)
 }
