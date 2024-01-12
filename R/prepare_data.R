@@ -33,9 +33,9 @@ prepare_data <- function(rawdata) {
     mutate(date_previous = dplyr::lag(.data$date, n = 1),
            delta_time = as.numeric(.data$date - .data$date_previous), ## compute time between event and next
            delta_year = .data$year - dplyr::lag(.data$year),  ## compute number of calendar year between two events
-           delta_year_factor = factor(dplyr::case_when(.data$delta_year < 1 ~ "same",
-                                                .data$delta_year < 2 ~ "one",
-                                                TRUE ~ "more")), ## categorial, 1 = same year, 2 = 2 or more years
+           delta_season = factor(dplyr::case_when(.data$delta_year < 1 ~ "same breeding season",
+                                                .data$delta_year < 2 ~ "one breeding season apart",
+                                                TRUE ~ "more than one breeding season apart")), ## categorial, 1 = same year, 2 = 2 or more years
            breeding_site_lat_previous = dplyr::lag(.data$breeding_site_lat), ## retrieve latitude of previous event
            breeding_site_long_previous = dplyr::lag(.data$breeding_site_long),
            lat_relocation_previous = dplyr::lag(.data$release_site_lat),
@@ -63,7 +63,7 @@ prepare_data <- function(rawdata) {
     dplyr::slice(-1, .by = "ring_number") -> data_for_model_4
 
   data_for_model_4 |>
-    dplyr::filter(.data$delta_year_factor != "more") -> data_for_model_5 ## remove recapture event too far apart in time
+    dplyr::filter(.data$delta_season != "more than one breeding season apart") -> data_for_model_5 ## remove recapture event too far apart in time
 
   data_for_model_5 |>
     tidyr::drop_na("ring_number", "delta_time",
@@ -135,7 +135,7 @@ prepare_data <- function(rawdata) {
   print(res)
   cat("\n")
 
-  tibble::as_tibble(data_for_model)
+  tibble::as_tibble(droplevels(data_for_model))
 }
 
 

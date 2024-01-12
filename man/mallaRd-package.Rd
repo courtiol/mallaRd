@@ -32,18 +32,16 @@ rawdata |>
          ring_number = ifelse(.data$ring_number == "", NA, .data$ring_number)) |>
   mutate(across(where(is.character), as.factor)) -> duck_all
 
-duck_all
-
 
 ## Summary statistics for the full dataset
 
 ### total number of breeding events
 nrow(duck_all)
-# [1] 1734
+# [1] 1732
 
 ### breeding events from identified (ringed)  ducks
 sum(!is.na(duck_all$ring_number))
-# [1] 1213
+# [1] 1211
 
 ### total number of identified (ringed) ducks
 length(levels(duck_all$ring_number))
@@ -53,6 +51,10 @@ length(levels(duck_all$ring_number))
 length(unique(duck_all$year))
 # [1] 16
 
+### range of years
+range(duck_all$year)
+# [1] 2005 2020
+
 ### breeding events for which floor level known
 sum(!is.na(duck_all$floor_level))
 # [1] 100
@@ -60,14 +62,6 @@ sum(!is.na(duck_all$floor_level))
 ### pct of breeding events for which floor level known
 round(100*(sum(!is.na(duck_all$floor_level))/nrow(duck_all)))
 # [1] 6
-
-### number of recaptures (only possible for identified ducks)
-duck_all |>
-  filter(!is.na(.data$ring_number)) |>
-  summarise(recapture_nb = n() - 1, .by = "ring_number") |>
-  pull(recapture_nb) |>
-  sum()
-# [1] 403
 
 
 ## Reformatting the data for statistical modelling retaining only observations for which all
@@ -78,32 +72,26 @@ data_model <- prepare_data(duck_all)
 # # A tibble: 8 × 7
 #   description                                             breeding_events_removed remaining_events delta_events_pct ducks_removed remaining_ducks delta_duck_pct
 #   <chr>                                                                     <dbl>            <int>            <dbl>         <dbl>           <int>          <dbl>
-# 1 raw data                                                                      0             1734            0                 0             810          0
-# 2 removed because unknown ducks                                               521             1213           30.0               0             810          0
-# 3 removed because only observed once                                          581              632           33.5             581             229         71.7
-# 4 removed because of reshaping the data                                         0              632            0                 0             229          0
-# 5 removed because first occurrence per duck not used                          229              403           13.2               0             229          0
-# 6 removed because recapture events more than 1 year apart                      91              312            5.25             42             187          5.19
-# 7 removed because of missing values for predictors                             10              302            0.577             6             181          0.741
-# 8 final number of rows                                                        302              302           17.4               0             181          0
-
-### check that recapture events are sufficiently spaced out
-sort(data_model$delta_time) ## values below 40 look suspicious
-data_model |>
-  filter(delta_time < 40) |> ## FIXME
-  select("year", "ring_number", "date", "date_previous", "delta_time")
+# 1 raw data                                                                      0             1732            0                 0             810          0
+# 2 removed because unknown ducks                                               521             1211           30.1               0             810          0
+# 3 removed because only observed once                                          582              629           33.6             582             228         71.9
+# 4 removed because of reshaping the data                                         0              629            0                 0             228          0
+# 5 removed because first occurrence per duck not used                          228              401           13.2               0             228          0
+# 6 removed because recapture events more than 1 year apart                      91              310            5.25             42             186          5.19
+# 7 removed because of missing values for predictors                             10              300            0.577             6             180          0.741
+# 8 final number of rows                                                        300              300           17.3               0             180          0
 
 ### total number of breeding events (nrow + 1/duck)
 nrow(data_model) + length(unique(data_model$ring_number))
-# [1] 483
+# [1] 480
 
 ### total number of recapture events
 nrow(data_model)
-# [1] 302
+# [1] 300
 
 ### total number of ducks complete dataset
 length(unique(data_model$ring_number))
-# [1] 181
+# [1] 180
 
 }
 \references{
