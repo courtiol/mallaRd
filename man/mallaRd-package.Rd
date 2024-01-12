@@ -94,6 +94,29 @@ nrow(data_model)
 length(unique(data_model$ring_number))
 # [1] 180
 
+### correlation between quantitative predictors of different type
+cor_matrix <- cor(data_model[,
+  c("brood_size_previous_z",
+    "relocation_distance_z",
+    "trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z",
+    "populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z")])
+diag(cor_matrix) <- NA
+cor_matrix[c("trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z"),
+           c("trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z")] <- NA
+cor_matrix[c("populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z"),
+           c("populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z")] <- NA
+range(cor_matrix, na.rm = TRUE)
+# [1] -0.10731  0.65026
+
+
+## Prepare formulas for model fits
+
+formula_df <- prepare_formula()
+
+### number of different models to fit
+nrow(formula_df)
+#[1] 4096
+
 }
 \references{
 reference will be added once the paper is published

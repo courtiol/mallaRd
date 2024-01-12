@@ -18,6 +18,7 @@ prepare_data <- function(rawdata) {
                                                 "_",
                                                 round(.data$breeding_site_long, 3)))) |>
     dplyr::select("year", "ring_number", "date",
+                  "habitat_type",
                   "breeding_site_lat", "breeding_site_long",
                   "breeding_site_ID",
                   "release_site_lat", "release_site_long",
@@ -34,7 +35,9 @@ prepare_data <- function(rawdata) {
     dplyr::filter(dplyr::n() > 1, .by = "ring_number") -> data_for_model_2 ## remove duck only seen once
 
   data_for_model_2 |>
-    dplyr::mutate(date_previous = dplyr::lag(.data$date, n = 1),
+    dplyr::mutate(
+           habitat_type_previous = dplyr::lag(.data$habitat_type, n = 1),
+           date_previous = dplyr::lag(.data$date, n = 1),
            delta_time = as.numeric(.data$date - .data$date_previous), ## compute time between event and next
            delta_year = .data$year - dplyr::lag(.data$year),  ## compute number of calendar year between two events
            delta_season = factor(dplyr::case_when(.data$delta_year < 1 ~ "same breeding season",
@@ -70,7 +73,7 @@ prepare_data <- function(rawdata) {
     dplyr::filter(.data$delta_season != "more than one breeding season apart") -> data_for_model_5 ## remove recapture event too far apart in time
 
   data_for_model_5 |>
-    tidyr::drop_na("ring_number", "delta_season",
+    tidyr::drop_na("ring_number", "habitat_type_previous", "delta_season",
             "delta_distance", "relocation_distance",
             "breeding_site_lat_previous", "breeding_site_long_previous",
             "breeding_site_long", "breeding_site_lat", "breeding_site_ID",
@@ -79,7 +82,7 @@ prepare_data <- function(rawdata) {
             tidyselect::starts_with("presence"),  tidyselect::starts_with("traffic"), tidyselect::starts_with("populationdensity")) -> data_for_model_6 ## remove rows with NAs
 
   data_for_model_6 |>
-    dplyr::mutate(stay = .data$delta_distance < 20,
+    dplyr::mutate(return = .data$delta_distance < 20,
                   PSW1000_previous_f = as.factor(.data$PSW1000_previous),
                   PSW2000_previous_f = as.factor(.data$PSW2000_previous)) |>   ## if distance is under 20m, we consider ducks to go back to same place
     dplyr::mutate(dplyr::across(c("brood_size_previous",
@@ -88,7 +91,7 @@ prepare_data <- function(rawdata) {
                                   "trafficvolume500_previous", "trafficvolume1000_previous", "trafficvolume2000_previous",
                                   "populationdensity500_previous", "populationdensity1000_previous", "populationdensity2000_previous"),
                                 .fns = \(x) scale(x)[, 1], .names = "{.col}_z")) |>
-    dplyr::select("ring_number", "date", "delta_season",
+    dplyr::select("ring_number", "date", "return", "habitat_type_previous", "delta_season",
                   "breeding_site_lat", "breeding_site_long", "breeding_site_ID",
                   "brood_size_previous", "brood_size_previous_z",
                   "relocation_distance", "relocation_distance_z",
