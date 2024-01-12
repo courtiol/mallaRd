@@ -29,7 +29,15 @@ head(rawdata)
 rawdata |>
   as_tibble() |>
   mutate(date = as.Date(.data$date, format = c("\%d.\%m.\%Y")),
+         hatch_date = as.Date(.data$hatch_date, format = c("\%d.\%m.\%Y")),
+         jan_1st = as.Date(paste0(.data$year, "-01-01")),
+         hatch_doy = as.numeric(.data$hatch_date - as.Date(.data$jan_1st)),
          ring_number = ifelse(.data$ring_number == "", NA, .data$ring_number)) |>
+  mutate(habitat_type_balcony = .data$habitat_type == "balcony",
+         habitat_type_courtyard = .data$habitat_type == "courtyard",
+         habitat_type_other = .data$habitat_type == "other",
+         habitat_type_roof_terrace = .data$habitat_type == "roof_terrace",
+         habitat_type_unknown = .data$habitat_type == "unknown") |>
   mutate(across(c("PSW1000", "PSW2000"), \(x) factor(ifelse(x == 0, "no", "yes")))) |>
   mutate(across(where(is.character), as.factor)) -> duck_all
 
@@ -45,11 +53,11 @@ sum(!is.na(duck_all$ring_number))
 # [1] 1211
 
 ### total number of identified (ringed) ducks
-length(levels(duck_all$ring_number))
+howmany(duck_all$ring_number)
 # [1] 810
 
 ### total number of years
-length(unique(duck_all$year))
+howmany(duck_all$year)
 # [1] 16
 
 ### range of years
@@ -87,7 +95,7 @@ data_model <- prepare_data(duck_all)
 
 
 ### total number of breeding events (nrow + 1/duck)
-nrow(data_model) + length(unique(data_model$ring_number))
+nrow(data_model) + howmany(data_model$individual_ID)
 # [1] 480
 
 ### total number of recapture events
@@ -95,7 +103,7 @@ nrow(data_model)
 # [1] 300
 
 ### total number of ducks complete dataset
-length(unique(data_model$ring_number))
+howmany(data_model$individual_ID)
 # [1] 180
 
 ### correlation between quantitative predictors of different type
@@ -119,10 +127,138 @@ formula_df <- prepare_formulas()
 
 ### number of different models to fit
 nrow(formula_df)
-#[1] 4096
+# [1] 4096
 
 
-##
+## Results on breeding output
+
+### sample size for clutch size
+sum(!is.na(duck_all$clutch_size)) # breeding events
+# [1] 1273
+howmany(duck_all$ring_number[!is.na(duck_all$clutch_size)]) # ducks
+# [1] 714
+
+### mean clutch size
+mean(duck_all$clutch_size, na.rm = TRUE)
+# [1] 8.666143
+
+### range clutch size
+range(duck_all$clutch_size, na.rm = TRUE)
+# [1] 1 17
+
+### sample size for brood size
+sum(!is.na(duck_all$brood_size)) # breeding events
+# [1] 1719
+howmany(duck_all$ring_number[!is.na(duck_all$brood_size)]) # ducks
+# [1] 805
+
+### mean brood size
+mean(duck_all$brood_size, na.rm = TRUE)
+# [1] 7.028505
+
+### range brood size
+range(duck_all$brood_size, na.rm = TRUE)
+# [1] 1 15
+
+### sample size for body mass
+sum(!is.na(duck_all$body_mass_g)) # breeding events
+# [1] 1171
+howmany(duck_all$ring_number[!is.na(duck_all$body_mass_g)]) # ducks
+# [1] 767
+
+### mean body mass
+mean(duck_all$body_mass_g, na.rm = TRUE)
+# [1] 817.0171
+
+### range body mass
+range(duck_all$body_mass_g, na.rm = TRUE)
+# [1]  520 1030
+
+### sample size for wing length
+sum(!is.na(duck_all$wing_length_mm)) # breeding events
+# [1] 1190
+howmany(duck_all$ring_number[!is.na(duck_all$wing_length_mm)]) # ducks
+# [1] 783
+
+### mean wing length
+mean(duck_all$wing_length_mm, na.rm = TRUE)
+# [1] 264.458
+
+### range wing length
+range(duck_all$wing_length_mm, na.rm = TRUE)
+# [1] 226 287
+
+### sample size for hatching day of the year
+sum(!is.na(duck_all$hatch_doy)) # breeding events
+# [1] 1457
+howmany(duck_all$ring_number[!is.na(duck_all$hatch_doy)]) # ducks
+# [1] 774
+
+### mean hatching day of the year
+mean(duck_all$hatch_doy, na.rm = TRUE)
+# [1] 146.5573
+
+### range hatching day of the year
+range(duck_all$hatch_doy, na.rm = TRUE)
+# [1] 61 207
+
+## Results on site selection
+
+### sample size for habitat type predictor
+sum(!is.na(duck_all$habitat_type)) # breeding events
+# [1] 1732
+howmany(duck_all$ring_number[!is.na(duck_all$habitat_type)]) # ducks
+# [1] 810
+
+### sample size for habitat type roof terraces
+sum(duck_all$habitat_type_roof_terrace) # breeding events
+# [1] 485
+howmany(duck_all$ring_number[duck_all$habitat_type_roof_terrace]) # ducks
+# [1] 277
+
+### pct habitat type roof terraces
+100*mean(duck_all$habitat_type_roof_terrace, na.rm = TRUE)
+# [1] 28.00231
+
+### sample size for habitat type balconies
+sum(duck_all$habitat_type_balcony) # breeding events
+# [1] 509
+howmany(duck_all$ring_number[duck_all$habitat_type_balcony]) # ducks
+# [1] 319
+
+### pct habitat type roof balconies
+100*mean(duck_all$habitat_type_balcony, na.rm = TRUE)
+# [1] 29.38799
+
+### sample size for habitat type courtyards
+sum(duck_all$habitat_type_courtyard) # breeding events
+# [1] 437
+howmany(duck_all$ring_number[duck_all$habitat_type_courtyard]) # ducks
+# [1] 243
+
+### pct habitat type roof courtyards
+100*mean(duck_all$habitat_type_courtyard, na.rm = TRUE)
+# [1] 25.23095
+
+### sample size for habitat type other
+sum(duck_all$habitat_type_other) # breeding events
+# [1] 77
+howmany(duck_all$ring_number[duck_all$habitat_type_other]) # ducks
+# [1] 41
+
+### pct habitat type other
+100*mean(duck_all$habitat_type_other, na.rm = TRUE)
+# [1] 4.445727
+
+### sample size for habitat type unknown
+sum(duck_all$habitat_type_unknown) # breeding events
+# [1] 224
+howmany(duck_all$ring_number[duck_all$habitat_type_unknown]) # ducks
+# [1] 34
+
+### pct habitat type unknown
+100*mean(duck_all$habitat_type_unknown, na.rm = TRUE)
+# [1] 12.93303
 
 }
 \references{

@@ -18,6 +18,14 @@ dplyr::filter
 #' @export
 dplyr::mutate
 
+#' @importFrom dplyr reframe
+#' @export
+dplyr::reframe
+
+#' @importFrom dplyr summarise
+#' @export
+dplyr::summarise
+
 #' @importFrom dplyr where
 #' @export
 dplyr::where

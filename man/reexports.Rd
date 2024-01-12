@@ -7,6 +7,8 @@
 \alias{count}
 \alias{filter}
 \alias{mutate}
+\alias{reframe}
+\alias{summarise}
 \alias{where}
 \alias{as_tibble}
 \title{Objects exported from other packages}
@@ -16,7 +18,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{count}}, \code{\link[dplyr]{filter}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr:reexports]{where}}}
+  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{count}}, \code{\link[dplyr]{filter}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr]{reframe}}, \code{\link[dplyr]{summarise}}, \code{\link[dplyr:reexports]{where}}}
 
   \item{tibble}{\code{\link[tibble]{as_tibble}}}
 }}

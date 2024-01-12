@@ -21,6 +21,8 @@
 \item{ncpus}{the number of CPU cores to use for parallel processing (default = 2)}
 
 \item{rawdata}{the data frame containing the raw data}
+
+\item{x}{a vector}
 }
 \description{
 Here is the list of most function arguments used in the package.

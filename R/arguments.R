@@ -18,4 +18,5 @@
 #' @param long2 the longitude of point 2
 #' @param ncpus the number of CPU cores to use for parallel processing (default = 2)
 #' @param rawdata the data frame containing the raw data
+#' @param x a vector
 NULL

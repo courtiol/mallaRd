@@ -30,3 +30,19 @@ distance2points <- function(lat1, long1, lat2, long2) {
 #' @return `distance2points_vec()` returns a vector of objects of class `units` providing the distance between geographic locations
 #' @export
 distance2points_vec <- Vectorize(distance2points) ## vectorised version of the function (not efficient but works)
+
+
+#' Compute the number of elements in a vector after discarding NAs
+#'
+#' @inheritParams arguments
+#'
+#' @return the number of elements
+#' @export
+#'
+#' @examples
+#' howmany(c(1, 3, NA))
+#' howmany(c("1", "3", NA))
+#'
+howmany <- function(x) {
+  length(unique(x[!is.na(x)]))
+  }
