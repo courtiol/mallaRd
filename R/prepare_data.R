@@ -30,7 +30,7 @@ prepare_data <- function(rawdata) {
     dplyr::filter(dplyr::n() > 1, .by = "ring_number") -> data_for_model_2 ## remove duck only seen once
 
   data_for_model_2 |>
-    mutate(date_previous = dplyr::lag(.data$date, n = 1),
+    dplyr::mutate(date_previous = dplyr::lag(.data$date, n = 1),
            delta_time = as.numeric(.data$date - .data$date_previous), ## compute time between event and next
            delta_year = .data$year - dplyr::lag(.data$year),  ## compute number of calendar year between two events
            delta_season = factor(dplyr::case_when(.data$delta_year < 1 ~ "same breeding season",
@@ -44,8 +44,8 @@ prepare_data <- function(rawdata) {
                                                 lat2 = .data$breeding_site_lat_previous, long2 = .data$breeding_site_long_previous),
            relocation_distance = distance2points_vec(lat1 = .data$breeding_site_lat_previous, long1 = .data$breeding_site_long_previous,
                                                      lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
-           relocation_distance_factor = factor(case_when(.data$relocation_distance < 1000 ~ "less than 1K",
-                                                         .data$relocation_distance >= 1000 & .data$relocation_distance < 2000 ~ "1 - 2K",
+           relocation_distance_factor = factor(dplyr::case_when(.data$relocation_distance < 1000 ~ "less than 1K",
+                                                                .data$relocation_distance >= 1000 & .data$relocation_distance < 2000 ~ "1 - 2K",
                                                          TRUE ~ ">= 2K")), ## categorial
            brood_size_previous = dplyr::lag(.data$brood_size),
            DNSW_previous = dplyr::lag(.data$DNSW),

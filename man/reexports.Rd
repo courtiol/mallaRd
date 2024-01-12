@@ -4,18 +4,9 @@
 \name{reexports}
 \alias{reexports}
 \alias{across}
-\alias{arrange}
-\alias{case_when}
 \alias{count}
-\alias{everything}
 \alias{filter}
-\alias{lag}
 \alias{mutate}
-\alias{n}
-\alias{pull}
-\alias{select}
-\alias{slice}
-\alias{summarise}
 \alias{where}
 \alias{as_tibble}
 \title{Objects exported from other packages}
@@ -25,7 +16,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{arrange}}, \code{\link[dplyr]{case_when}}, \code{\link[dplyr]{count}}, \code{\link[dplyr:reexports]{everything}}, \code{\link[dplyr]{filter}}, \code{\link[dplyr:lead-lag]{lag}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr:context]{n}}, \code{\link[dplyr]{pull}}, \code{\link[dplyr]{select}}, \code{\link[dplyr]{slice}}, \code{\link[dplyr]{summarise}}, \code{\link[dplyr:reexports]{where}}}
+  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{count}}, \code{\link[dplyr]{filter}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr:reexports]{where}}}
 
   \item{tibble}{\code{\link[tibble]{as_tibble}}}
 }}
