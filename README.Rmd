@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+library(mallaRd)
 ```
 
 
@@ -44,13 +45,21 @@ load("mallaRd")
 You can access the raw data used for the paper [here](inst/extdata/raw_data.csv) or via the R package:
 
 ```{r, eval=TRUE}
-rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
-head(rawdata) ## first 6 rows
+head(data_raw) ## first 6 rows
 ```
 
 ## Developer corner
 
-Here is the information of the environment we used to run all the analyses:
+Our package relies on the following packages:
+
+```{r, eval=TRUE}
+pkgs <- desc::desc_get_deps()
+pkgs <- pkgs[pkgs$package!="R", ]
+pkgs$version_used <- sapply(pkgs$package, \(pkg) paste(packageVersion(pkg), sep = "."))
+pkgs
+```
+
+Here is the information of the R & RStudio environment used to run all the analyses:
 
 ```{r, eval=TRUE}
 sessionInfo()

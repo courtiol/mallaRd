@@ -12,21 +12,31 @@ This help page reproduces, in the section \strong{Examples} the analyses and res
 implications for conservation management strategies" by Engler et al.
 }
 \details{
+All three datasets used in the workflow below are readily available after loading this package
+(\code{data_raw}, \code{data_all} and \code{data_model}) but the workflow below shows how we created such
+datasets starting from the raw data file stored in the subfolder extdata of this package.
+
 Note that the workflow relies on functions from other packages (e.g. \pkg{dplyr}), but we reexported
 these functions so you don't have to load these packages as long as \strong{mallaRd} is loaded. If
 you want to expand upon the proposed workflow and require more functions, you will however have
 to load such packages explicitly.
 }
 \examples{
+
+# Methods ---------------------------------------------------------------------------------------
+
 ## Loading the raw data
 
-rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
-head(rawdata)
+data_raw <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
+head(data_raw)
+
+## for developer only: save the created data into the package
+# usethis::use_data(data_raw, overwrite = TRUE)
 
 
 ## Formatting the data
 
-rawdata |>
+data_raw |>
   as_tibble() |>
   mutate(date = as.Date(.data$date, format = c("\%d.\%m.\%Y")),
          hatch_date = as.Date(.data$hatch_date, format = c("\%d.\%m.\%Y")),
@@ -39,44 +49,46 @@ rawdata |>
          habitat_type_roof_terrace = .data$habitat_type == "roof_terrace",
          habitat_type_unknown = .data$habitat_type == "unknown") |>
   mutate(across(c("PSW1000", "PSW2000"), \(x) factor(ifelse(x == 0, "no", "yes")))) |>
-  mutate(across(where(is.character), as.factor)) -> duck_all
+  mutate(across(where(is.character), as.factor)) -> data_all
 
+## for developer only: save the created data into the package
+# usethis::use_data(data_all, overwrite = TRUE)
 
 ## Summary statistics for the full dataset
 
 ### total number of breeding events
-nrow(duck_all)
+nrow(data_all)
 # [1] 1732
 
 ### breeding events from identified (ringed)  ducks
-sum(!is.na(duck_all$ring_number))
+sum(!is.na(data_all$ring_number))
 # [1] 1211
 
 ### total number of identified (ringed) ducks
-howmany(duck_all$ring_number)
+howmany(data_all$ring_number)
 # [1] 810
 
 ### total number of years
-howmany(duck_all$year)
+howmany(data_all$year)
 # [1] 16
 
 ### range of years
-range(duck_all$year)
+range(data_all$year)
 # [1] 2005 2020
 
 ### breeding events for which floor level known
-sum(!is.na(duck_all$floor_level))
+sum(!is.na(data_all$floor_level))
 # [1] 100
 
 ### pct of breeding events for which floor level known
-round(100*(sum(!is.na(duck_all$floor_level))/nrow(duck_all)))
+round(100*(sum(!is.na(data_all$floor_level))/nrow(data_all)))
 # [1] 6
 
 
 ## Reformatting the data for statistical modelling retaining only observations for which all
 ## predictors used for modelling are available
 
-data_model <- prepare_data(duck_all)
+data_model <- prepare_data(data_all)
 # Information on data filtering
 # # A tibble: 8 × 7
 #   description                                             breeding_events_removed remaining_events delta_events_pct ducks_removed remaining_ducks delta_duck_pct
@@ -130,135 +142,144 @@ nrow(formula_df)
 # [1] 4096
 
 
-## Results on breeding output
+# Results on breeding output --------------------------------------------------------------------
+
+## descriptive statistics
 
 ### sample size for clutch size
-sum(!is.na(duck_all$clutch_size)) # breeding events
+sum(!is.na(data_all$clutch_size)) # breeding events
 # [1] 1273
-howmany(duck_all$ring_number[!is.na(duck_all$clutch_size)]) # ducks
+howmany(data_all$ring_number[!is.na(data_all$clutch_size)]) # ducks
 # [1] 714
 
 ### mean clutch size
-mean(duck_all$clutch_size, na.rm = TRUE)
+mean(data_all$clutch_size, na.rm = TRUE)
 # [1] 8.666143
 
 ### range clutch size
-range(duck_all$clutch_size, na.rm = TRUE)
+range(data_all$clutch_size, na.rm = TRUE)
 # [1] 1 17
 
 ### sample size for brood size
-sum(!is.na(duck_all$brood_size)) # breeding events
+sum(!is.na(data_all$brood_size)) # breeding events
 # [1] 1719
-howmany(duck_all$ring_number[!is.na(duck_all$brood_size)]) # ducks
+howmany(data_all$ring_number[!is.na(data_all$brood_size)]) # ducks
 # [1] 805
 
 ### mean brood size
-mean(duck_all$brood_size, na.rm = TRUE)
+mean(data_all$brood_size, na.rm = TRUE)
 # [1] 7.028505
 
 ### range brood size
-range(duck_all$brood_size, na.rm = TRUE)
+range(data_all$brood_size, na.rm = TRUE)
 # [1] 1 15
 
 ### sample size for body mass
-sum(!is.na(duck_all$body_mass_g)) # breeding events
+sum(!is.na(data_all$body_mass_g)) # breeding events
 # [1] 1171
-howmany(duck_all$ring_number[!is.na(duck_all$body_mass_g)]) # ducks
+howmany(data_all$ring_number[!is.na(data_all$body_mass_g)]) # ducks
 # [1] 767
 
 ### mean body mass
-mean(duck_all$body_mass_g, na.rm = TRUE)
+mean(data_all$body_mass_g, na.rm = TRUE)
 # [1] 817.0171
 
 ### range body mass
-range(duck_all$body_mass_g, na.rm = TRUE)
+range(data_all$body_mass_g, na.rm = TRUE)
 # [1]  520 1030
 
 ### sample size for wing length
-sum(!is.na(duck_all$wing_length_mm)) # breeding events
+sum(!is.na(data_all$wing_length_mm)) # breeding events
 # [1] 1190
-howmany(duck_all$ring_number[!is.na(duck_all$wing_length_mm)]) # ducks
+howmany(data_all$ring_number[!is.na(data_all$wing_length_mm)]) # ducks
 # [1] 783
 
 ### mean wing length
-mean(duck_all$wing_length_mm, na.rm = TRUE)
+mean(data_all$wing_length_mm, na.rm = TRUE)
 # [1] 264.458
 
 ### range wing length
-range(duck_all$wing_length_mm, na.rm = TRUE)
+range(data_all$wing_length_mm, na.rm = TRUE)
 # [1] 226 287
 
 ### sample size for hatching day of the year
-sum(!is.na(duck_all$hatch_doy)) # breeding events
+sum(!is.na(data_all$hatch_doy)) # breeding events
 # [1] 1457
-howmany(duck_all$ring_number[!is.na(duck_all$hatch_doy)]) # ducks
+howmany(data_all$ring_number[!is.na(data_all$hatch_doy)]) # ducks
 # [1] 774
 
 ### mean hatching day of the year
-mean(duck_all$hatch_doy, na.rm = TRUE)
+mean(data_all$hatch_doy, na.rm = TRUE)
 # [1] 146.5573
 
 ### range hatching day of the year
-range(duck_all$hatch_doy, na.rm = TRUE)
+range(data_all$hatch_doy, na.rm = TRUE)
 # [1] 61 207
 
-## Results on site selection
+
+# Results on site selection ---------------------------------------------------------------------
+
+## descriptive statistics
 
 ### sample size for habitat type predictor
-sum(!is.na(duck_all$habitat_type)) # breeding events
+sum(!is.na(data_all$habitat_type)) # breeding events
 # [1] 1732
-howmany(duck_all$ring_number[!is.na(duck_all$habitat_type)]) # ducks
+howmany(data_all$ring_number[!is.na(data_all$habitat_type)]) # ducks
 # [1] 810
 
 ### sample size for habitat type roof terraces
-sum(duck_all$habitat_type_roof_terrace) # breeding events
+sum(data_all$habitat_type_roof_terrace) # breeding events
 # [1] 485
-howmany(duck_all$ring_number[duck_all$habitat_type_roof_terrace]) # ducks
+howmany(data_all$ring_number[data_all$habitat_type_roof_terrace]) # ducks
 # [1] 277
 
 ### pct habitat type roof terraces
-100*mean(duck_all$habitat_type_roof_terrace, na.rm = TRUE)
+100*mean(data_all$habitat_type_roof_terrace, na.rm = TRUE)
 # [1] 28.00231
 
 ### sample size for habitat type balconies
-sum(duck_all$habitat_type_balcony) # breeding events
+sum(data_all$habitat_type_balcony) # breeding events
 # [1] 509
-howmany(duck_all$ring_number[duck_all$habitat_type_balcony]) # ducks
+howmany(data_all$ring_number[data_all$habitat_type_balcony]) # ducks
 # [1] 319
 
 ### pct habitat type roof balconies
-100*mean(duck_all$habitat_type_balcony, na.rm = TRUE)
+100*mean(data_all$habitat_type_balcony, na.rm = TRUE)
 # [1] 29.38799
 
 ### sample size for habitat type courtyards
-sum(duck_all$habitat_type_courtyard) # breeding events
+sum(data_all$habitat_type_courtyard) # breeding events
 # [1] 437
-howmany(duck_all$ring_number[duck_all$habitat_type_courtyard]) # ducks
+howmany(data_all$ring_number[data_all$habitat_type_courtyard]) # ducks
 # [1] 243
 
 ### pct habitat type roof courtyards
-100*mean(duck_all$habitat_type_courtyard, na.rm = TRUE)
+100*mean(data_all$habitat_type_courtyard, na.rm = TRUE)
 # [1] 25.23095
 
 ### sample size for habitat type other
-sum(duck_all$habitat_type_other) # breeding events
+sum(data_all$habitat_type_other) # breeding events
 # [1] 77
-howmany(duck_all$ring_number[duck_all$habitat_type_other]) # ducks
+howmany(data_all$ring_number[data_all$habitat_type_other]) # ducks
 # [1] 41
 
 ### pct habitat type other
-100*mean(duck_all$habitat_type_other, na.rm = TRUE)
+100*mean(data_all$habitat_type_other, na.rm = TRUE)
 # [1] 4.445727
 
 ### sample size for habitat type unknown
-sum(duck_all$habitat_type_unknown) # breeding events
+sum(data_all$habitat_type_unknown) # breeding events
 # [1] 224
-howmany(duck_all$ring_number[duck_all$habitat_type_unknown]) # ducks
+howmany(data_all$ring_number[data_all$habitat_type_unknown]) # ducks
 # [1] 34
 
 ### pct habitat type unknown
-100*mean(duck_all$habitat_type_unknown, na.rm = TRUE)
+100*mean(data_all$habitat_type_unknown, na.rm = TRUE)
 # [1] 12.93303
+
+# Results on breeding site fidelity -------------------------------------------------------------
+
+
 
 }
 \references{

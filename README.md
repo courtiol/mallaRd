@@ -35,8 +35,7 @@ You can access the raw data used for the paper
 [here](inst/extdata/raw_data.csv) or via the R package:
 
 ``` r
-rawdata <- read.csv(system.file("extdata/raw_data.csv", package = "mallaRd"))
-head(rawdata) ## first 6 rows
+head(data_raw) ## first 6 rows
 ```
 
 <div class="kable-table">
@@ -54,8 +53,36 @@ head(rawdata) ## first 6 rows
 
 ## Developer corner
 
-Here is the information of the environment we used to run all the
-analyses:
+Our package relies on the following packages:
+
+``` r
+pkgs <- desc::desc_get_deps()
+pkgs <- pkgs[pkgs$package!="R", ]
+pkgs$version_used <- sapply(pkgs$package, \(pkg) paste(packageVersion(pkg), sep = "."))
+pkgs
+```
+
+<div class="kable-table">
+
+| type     | package    | version | version_used |
+|:---------|:-----------|:--------|:-------------|
+| Imports  | dplyr      | \*      | 1.1.4        |
+| Imports  | furrr      | \*      | 0.3.1        |
+| Imports  | future     | \*      | 1.33.1       |
+| Imports  | sf         | \*      | 1.0.15       |
+| Imports  | spaMM      | \*      | 4.4.16       |
+| Imports  | tibble     | \*      | 3.2.1        |
+| Imports  | tidyr      | \*      | 1.3.0        |
+| Imports  | tidyselect | \*      | 1.2.0        |
+| Suggests | desc       | \*      | 1.4.3        |
+| Suggests | spelling   | \*      | 2.2.1        |
+| Suggests | devtools   | \*      | 2.4.5        |
+| Suggests | knitr      | \*      | 1.45         |
+
+</div>
+
+Here is the information of the R & RStudio environment used to run all
+the analyses:
 
 ``` r
 sessionInfo()
@@ -81,9 +108,15 @@ sessionInfo()
 #> attached base packages:
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
+#> other attached packages:
+#> [1] mallaRd_0.1.0
+#> 
 #> loaded via a namespace (and not attached):
-#>  [1] compiler_4.3.1    fastmap_1.1.1     cli_3.6.2         tools_4.3.1      
-#>  [5] htmltools_0.5.7   rstudioapi_0.15.0 yaml_2.3.8        rmarkdown_2.25   
-#>  [9] knitr_1.45        xfun_0.41         digest_0.6.33     rlang_1.1.2      
-#> [13] evaluate_0.23
+#>  [1] desc_1.4.3        digest_0.6.33     utf8_1.2.4        R6_2.5.1         
+#>  [5] fastmap_1.1.1     tidyselect_1.2.0  xfun_0.41         magrittr_2.0.3   
+#>  [9] glue_1.6.2        tibble_3.2.1      knitr_1.45        pkgconfig_2.0.3  
+#> [13] htmltools_0.5.7   rmarkdown_2.25    dplyr_1.1.4       generics_0.1.3   
+#> [17] lifecycle_1.0.4   cli_3.6.2         fansi_1.0.6       vctrs_0.6.5      
+#> [21] compiler_4.3.1    rstudioapi_0.15.0 tools_4.3.1       pillar_1.9.0     
+#> [25] evaluate_0.23     yaml_2.3.8        rlang_1.1.2
 ```

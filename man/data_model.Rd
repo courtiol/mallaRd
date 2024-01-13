@@ -3,12 +3,13 @@
 \docType{data}
 \name{data_model}
 \alias{data_model}
-\title{The complete dataset for fitting the models}
+\title{The dataset used for fitting the models}
 \format{
 a \code{tibble}
 }
 \description{
-This dataset contains the data used to fit all the models.
+This dataset contains the data used to fit all the models. It derives from \code{data_all} as shown in
+\code{?mallaRd}.
 }
 \examples{
 data_model
@@ -16,5 +17,8 @@ data_model
 }
 \references{
 this study
+}
+\seealso{
+\link{data_raw}, \link{data_all}
 }
 \keyword{datasets}

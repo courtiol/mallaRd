@@ -14,14 +14,14 @@
 prepare_data <- function(rawdata) {
 
   rawdata |>
-    dplyr::mutate(breeding_site_ID = as.factor(paste0(round(.data$breeding_site_lat, 3),
+    dplyr::mutate(location_ID = as.factor(paste0(round(.data$breeding_site_lat, 3),
                                                 "_",
                                                 round(.data$breeding_site_long, 3))),
                   individual_ID = .data$ring_number) |>
     dplyr::select("year", "individual_ID", "date",
                   "habitat_type",
                   "breeding_site_lat", "breeding_site_long",
-                  "breeding_site_ID",
+                  "location_ID",
                   "release_site_lat", "release_site_long",
                   "brood_size",
                    "DNSW",
@@ -77,7 +77,7 @@ prepare_data <- function(rawdata) {
     tidyr::drop_na("individual_ID", "habitat_type_previous", "delta_season",
             "delta_distance", "relocation_distance",
             "breeding_site_lat_previous", "breeding_site_long_previous",
-            "breeding_site_long", "breeding_site_lat", "breeding_site_ID",
+            "breeding_site_long", "breeding_site_lat", "location_ID",
             "brood_size", "brood_size_previous",
             "DNSW", "DNSW_previous",
             tidyselect::starts_with("presence"),  tidyselect::starts_with("traffic"), tidyselect::starts_with("populationdensity")) -> data_for_model_6 ## remove rows with NAs
@@ -93,7 +93,7 @@ prepare_data <- function(rawdata) {
                                   "populationdensity500_previous", "populationdensity1000_previous", "populationdensity2000_previous"),
                                 .fns = \(x) scale(x)[, 1], .names = "{.col}_z")) |>
     dplyr::select("individual_ID", "date", "return", "habitat_type_previous", "delta_season",
-                  "breeding_site_lat", "breeding_site_long", "breeding_site_ID",
+                  "breeding_site_lat", "breeding_site_long", "location_ID",
                   "brood_size_previous", "brood_size_previous_z",
                   "relocation_distance", "relocation_distance_z",
                   "DNSW_previous", "DNSW_previous_z",
