@@ -10,9 +10,13 @@
 
 \item{formulas}{the dataframe of formulas created with \code{prepare_formulas()}}
 
+\item{lat}{the latitude of a point}
+
 \item{lat1}{the latitude of point 1}
 
 \item{lat2}{the latitude of point 2}
+
+\item{long}{the longitude of a point}
 
 \item{long1}{the longitude of point 1}
 
@@ -21,6 +25,8 @@
 \item{ncpus}{the number of CPU cores to use for parallel processing (default = 2)}
 
 \item{rawdata}{the data frame containing the raw data}
+
+\item{threshold_distance_m}{a number specifying the maximum distance between two spatial points belonging to the same group}
 
 \item{x}{a vector}
 }

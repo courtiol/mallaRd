@@ -32,6 +32,28 @@ distance2points <- function(lat1, long1, lat2, long2) {
 distance2points_vec <- Vectorize(distance2points) ## vectorised version of the function (not efficient but works)
 
 
+# #' Create spatial groups
+# #'
+# #' This function creates unique ID for points that are spatially located within a particular distance of each others.
+# #'
+# #' @inheritParams arguments
+# #'
+# #' @return a vector a spatial groups
+# #' @export
+# #'
+# groupinspace <- function(data, long, lat, threshold_distance_m = 10) {
+#   locationOK <- !is.na(data[, long]) & !is.na(data[, lat])
+#   d <- data[locationOK, ]
+#   points <- sf::st_as_sf(d, coords = c(long, lat), crs = 4326)
+#   adj <- sf::st_distance(points, which = "Great Circle")
+#   adj <- matrix(as.numeric(as.numeric(adj)) <= threshold_distance_m, nrow = nrow(adj))
+#   g <- igraph::graph_from_adjacency_matrix(adj)
+#   res <- rep(NA_character_, nrow(data))
+#   res[locationOK] <- paste0("location_", igraph::components(g)$membership)
+#   res
+# }
+
+
 #' Compute the number of elements in a vector after discarding NAs
 #'
 #' @inheritParams arguments

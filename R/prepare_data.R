@@ -14,13 +14,10 @@
 prepare_data <- function(rawdata) {
 
   rawdata |>
-    dplyr::mutate(location_ID = as.factor(paste0(round(.data$breeding_site_lat, 3),
-                                                "_",
-                                                round(.data$breeding_site_long, 3))),
-                  individual_ID = .data$ring_number) |>
+    dplyr::mutate(individual_ID = .data$ring_number) |>
     dplyr::select("year", "individual_ID", "date",
                   "habitat_type",
-                  "breeding_site_lat", "breeding_site_long",
+                  "location_lat", "location_long",
                   "location_ID",
                   "release_site_lat", "release_site_long",
                   "brood_size",
@@ -38,19 +35,20 @@ prepare_data <- function(rawdata) {
   data_for_model_2 |>
     dplyr::mutate(
            habitat_type_previous = dplyr::lag(.data$habitat_type, n = 1),
+           location_ID_previous = dplyr::lag(.data$location_ID, n = 1),
            date_previous = dplyr::lag(.data$date, n = 1),
            delta_time = as.numeric(.data$date - .data$date_previous), ## compute time between event and next
            delta_year = .data$year - dplyr::lag(.data$year),  ## compute number of calendar year between two events
            delta_season = factor(dplyr::case_when(.data$delta_year < 1 ~ "same breeding season",
                                                 .data$delta_year < 2 ~ "one breeding season apart",
                                                 TRUE ~ "more than one breeding season apart")), ## categorial, 1 = same year, 2 = 2 or more years
-           breeding_site_lat_previous = dplyr::lag(.data$breeding_site_lat), ## retrieve latitude of previous event
-           breeding_site_long_previous = dplyr::lag(.data$breeding_site_long),
+           location_lat_previous = dplyr::lag(.data$location_lat), ## retrieve latitude of previous event
+           location_long_previous = dplyr::lag(.data$location_long),
            lat_relocation_previous = dplyr::lag(.data$release_site_lat),
            long_relocation_previous = dplyr::lag(.data$release_site_long),
-           delta_distance = distance2points_vec(lat1 = .data$breeding_site_lat, long1 = .data$breeding_site_long, ## delta distance
-                                                lat2 = .data$breeding_site_lat_previous, long2 = .data$breeding_site_long_previous),
-           relocation_distance = distance2points_vec(lat1 = .data$breeding_site_lat_previous, long1 = .data$breeding_site_long_previous,
+           delta_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long, ## delta distance
+                                                lat2 = .data$location_lat_previous, long2 = .data$location_long_previous),
+           relocation_distance = distance2points_vec(lat1 = .data$location_lat_previous, long1 = .data$location_long_previous,
                                                      lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
            relocation_distance_factor = factor(dplyr::case_when(.data$relocation_distance < 1000 ~ "less than 1K",
                                                                 .data$relocation_distance >= 1000 & .data$relocation_distance < 2000 ~ "1 - 2K",
@@ -76,14 +74,14 @@ prepare_data <- function(rawdata) {
   data_for_model_5 |>
     tidyr::drop_na("individual_ID", "habitat_type_previous", "delta_season",
             "delta_distance", "relocation_distance",
-            "breeding_site_lat_previous", "breeding_site_long_previous",
-            "breeding_site_long", "breeding_site_lat", "location_ID",
+            "location_lat_previous", "location_long_previous",
+            "location_long", "location_lat", "location_ID",
             "brood_size", "brood_size_previous",
             "DNSW", "DNSW_previous",
             tidyselect::starts_with("presence"),  tidyselect::starts_with("traffic"), tidyselect::starts_with("populationdensity")) -> data_for_model_6 ## remove rows with NAs
 
   data_for_model_6 |>
-    dplyr::mutate(return = .data$delta_distance < 20,
+    dplyr::mutate(return = .data$location_ID == .data$location_ID_previous,
                   PSW1000_previous_f = as.factor(.data$PSW1000_previous),
                   PSW2000_previous_f = as.factor(.data$PSW2000_previous)) |>   ## if distance is under 20m, we consider ducks to go back to same place
     dplyr::mutate(dplyr::across(c("brood_size_previous",
@@ -92,8 +90,13 @@ prepare_data <- function(rawdata) {
                                   "trafficvolume500_previous", "trafficvolume1000_previous", "trafficvolume2000_previous",
                                   "populationdensity500_previous", "populationdensity1000_previous", "populationdensity2000_previous"),
                                 .fns = \(x) scale(x)[, 1], .names = "{.col}_z")) |>
-    dplyr::select("individual_ID", "date", "return", "habitat_type_previous", "delta_season",
-                  "breeding_site_lat", "breeding_site_long", "location_ID",
+    dplyr::select("individual_ID",
+                  "date", "return",
+                  "habitat_type", "habitat_type_previous",
+                  "location_lat", "location_long",
+                  "location_lat_previous", "location_long_previous",
+                  "location_ID", "location_ID_previous",
+                  "delta_season",
                   "brood_size_previous", "brood_size_previous_z",
                   "relocation_distance", "relocation_distance_z",
                   "DNSW_previous", "DNSW_previous_z",
@@ -103,8 +106,7 @@ prepare_data <- function(rawdata) {
                   "trafficvolume2000_previous", "trafficvolume2000_previous_z",
                   "populationdensity500_previous", "populationdensity500_previous_z",
                   "populationdensity1000_previous", "populationdensity1000_previous_z",
-                  "populationdensity2000_previous", "populationdensity2000_previous_z") |>
-    droplevels() -> data_for_model
+                  "populationdensity2000_previous", "populationdensity2000_previous_z") -> data_for_model
 
   # describe discarded data
   res <- tibble::tibble(description = c("raw data",

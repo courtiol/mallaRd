@@ -18,6 +18,10 @@ dplyr::filter
 #' @export
 dplyr::mutate
 
+#' @importFrom dplyr n
+#' @export
+dplyr::n
+
 #' @importFrom dplyr reframe
 #' @export
 dplyr::reframe

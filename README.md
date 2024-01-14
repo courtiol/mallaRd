@@ -57,7 +57,7 @@ Our package relies on the following packages:
 
 ``` r
 pkgs <- desc::desc_get_deps()
-pkgs <- pkgs[pkgs$package!="R", ]
+pkgs <- pkgs[pkgs$package != "R", ]
 pkgs$version_used <- sapply(pkgs$package, \(pkg) paste(packageVersion(pkg), sep = "."))
 pkgs
 ```
