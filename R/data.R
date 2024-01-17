@@ -46,3 +46,18 @@ NULL
 #'
 NULL
 
+#' The table of fitted the models
+#'
+#' This tibble contains the models fitted with the function [fit()] as shown in `?mallaRd`.
+#'
+#' @name fitting_results
+#' @docType data
+#' @format a `tibble`
+#' @references this study
+#' @keywords datasets
+#' @seealso [fit()]
+#' @examples
+#' fitting_results
+#'
+NULL
+

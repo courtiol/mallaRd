@@ -160,10 +160,10 @@ range(cor_matrix, na.rm = TRUE)
 
 ## Prepare formulas for model fits
 
-formula_df <- prepare_formulas()
+formulas_df <- prepare_formulas()
 
 ## number of different models to fit
-nrow(formula_df)
+nrow(formulas_df)
 # [1] 4096
 
 packageVersion("spaMM")
@@ -354,6 +354,56 @@ mean(captures_per_duck$n)
 # [1] 1.508176
 sd(captures_per_duck$n)
 # [1] 1.110232
+
+## percentage of ducks observed multiple times that used the same site more than once
+data_all |>
+  filter(!is.na(.data$ring_number)) |>
+  mutate(n_obs = n(), .by = "ring_number") |>
+  filter(.data$n_obs > 1, !is.na(.data$location_ID)) |>
+  count(.data$location_ID, .data$ring_number) |>
+  summarise(reuse = any(.data$n > 2), .by = "ring_number") |>
+  count(.data$reuse) |>
+  mutate(pct = 100*.data$n/sum(.data$n))
+# # A tibble: 2 × 3
+#   reuse     n   pct
+#   <lgl> <int> <dbl>
+# 1 FALSE   176  77.2
+# 2 TRUE     52  22.8
+
+## number of breeding sites used by known ducks
+howmany(data_all$location_ID[!is.na(data_all$ring_number)])
+# 863
+
+## number of breeding sites used by more than one known ducks
+data_all |>
+  filter(!is.na(.data$ring_number), !is.na(.data$location_ID)) |>
+  summarise(n_ducks = howmany(ring_number), .by = "location_ID") |>
+  count(n_ducks > 1)
+ # # A tibble: 2 × 2
+ #   `n_ducks > 1`     n
+ #   <lgl>         <int>
+ # 1 FALSE           799
+ # 2 TRUE             64
+
+## stats for fig 3
+
+### breeding events from identified (ringed) ducks
+sum(!is.na(data_all$ring_number) & !is.na(data_all$location_ID))
+# [1] 1194
+
+### total number of identified (ringed) ducks
+howmany(data_all$ring_number[!is.na(data_all$location_ID)])
+# [1] 794
+
+### breeding events at site mostly used by ducks
+
+### fitting models
+## NOTE: this takes around 1 min usng 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fitting_results <- fit(formulas = formulas_df, data = data_model, ncpus = 100)
+
+## for developer only: save the created data into the package
+# usethis::use_data(fitting_results, overwrite = TRUE)
 
 }
 \references{
