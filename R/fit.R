@@ -29,10 +29,15 @@ fit <- function(formulas, data, ncpus = 2) {
                     logLik <- stats::logLik(fit)[[1]]
                     D <- TjurD(fit)
                     fit_time <- spaMM::how(fit, verbose = FALSE)[['fit_time']]
-                    tibble::tibble(formula = form, logLik = logLik, mAIC = mAIC, cAIC = cAIC, TjursD =  D$TjurD, fit_time_s = fit_time)
+                    tibble::tibble(formula = form, logLik = logLik,
+                                   mAIC = mAIC, cAIC = cAIC,
+                                   TjursD =  D$TjurD, fit_time_s = fit_time)
                     }, .options = furrr::furrr_options(seed = TRUE))
   })
   print(timing)
+
+  job$rank_mAIC <- rank(job$mAIC)
+  job$rank_cAIC <- rank(job$cAIC)
 
   dplyr::left_join(formulas, job)
 }

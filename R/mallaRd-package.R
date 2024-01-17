@@ -398,9 +398,15 @@
 #' ### fitting models
 #' ## NOTE: this takes around 1 min usng 100 CPUs
 #' ## uncomment to run and adjust ncpus to your system
-#' # fitting_results <- fit(formulas = formulas_df, data = data_model, ncpus = 100)
+#' # fitting_results <- fit(formulas = formulas_df, data = data_model, ncpus = 120)
 #'
 #' ## for developer only: save the created data into the package
 #' # usethis::use_data(fitting_results, overwrite = TRUE)
+#'
+#' ### best model
+#' fitting_results |>
+#'   filter(.data$rank_mAIC == min(.data$rank_mAIC) | .data$rank_cAIC == min(.data$rank_cAIC)) |>
+#'   pull(.data$formula)
+#' # [1] "return~populationdensity500_previous_z+delta_season+relocation_distance_z+(1|individual_ID)+(1|location_ID)+1"
 #'
 "_PACKAGE"

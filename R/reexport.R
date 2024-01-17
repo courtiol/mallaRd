@@ -22,6 +22,10 @@ dplyr::mutate
 #' @export
 dplyr::n
 
+#' @importFrom dplyr pull
+#' @export
+dplyr::pull
+
 #' @importFrom dplyr reframe
 #' @export
 dplyr::reframe
