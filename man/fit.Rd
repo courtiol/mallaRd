@@ -9,7 +9,7 @@ fit(formulas, data, ncpus = 2)
 \arguments{
 \item{formulas}{the dataframe of formulas created with \code{prepare_formulas()}}
 
-\item{data}{the dataframe containing the data used for model fitting}
+\item{data}{the dataframe containing the data used by the function}
 
 \item{ncpus}{the number of CPU cores to use for parallel processing (default = 2)}
 }

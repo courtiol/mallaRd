@@ -6,6 +6,11 @@
 #' @export
 dplyr::across
 
+
+#' @importFrom dplyr arrange
+#' @export
+dplyr::arrange
+
 #' @importFrom dplyr count
 #' @export
 dplyr::count
@@ -30,6 +35,10 @@ dplyr::pull
 #' @export
 dplyr::reframe
 
+#' @importFrom dplyr select
+#' @export
+dplyr::select
+
 #' @importFrom dplyr summarise
 #' @export
 dplyr::summarise
@@ -43,3 +52,15 @@ dplyr::where
 #' @importFrom tibble as_tibble
 #' @export
 tibble::as_tibble
+
+### From spaMM
+
+#' @importFrom spaMM fitme
+#' @export
+spaMM::fitme
+
+### From ggplot2
+
+#' @importFrom ggplot2 ggsave
+#' @export
+ggplot2::ggsave

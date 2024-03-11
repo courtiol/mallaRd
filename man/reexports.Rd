@@ -4,15 +4,19 @@
 \name{reexports}
 \alias{reexports}
 \alias{across}
+\alias{arrange}
 \alias{count}
 \alias{filter}
 \alias{mutate}
 \alias{n}
 \alias{pull}
 \alias{reframe}
+\alias{select}
 \alias{summarise}
 \alias{where}
 \alias{as_tibble}
+\alias{fitme}
+\alias{ggsave}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -20,7 +24,11 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{count}}, \code{\link[dplyr]{filter}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr:context]{n}}, \code{\link[dplyr]{pull}}, \code{\link[dplyr]{reframe}}, \code{\link[dplyr]{summarise}}, \code{\link[dplyr:reexports]{where}}}
+  \item{dplyr}{\code{\link[dplyr]{across}}, \code{\link[dplyr]{arrange}}, \code{\link[dplyr]{count}}, \code{\link[dplyr]{filter}}, \code{\link[dplyr]{mutate}}, \code{\link[dplyr:context]{n}}, \code{\link[dplyr]{pull}}, \code{\link[dplyr]{reframe}}, \code{\link[dplyr]{select}}, \code{\link[dplyr]{summarise}}, \code{\link[dplyr:reexports]{where}}}
+
+  \item{ggplot2}{\code{\link[ggplot2]{ggsave}}}
+
+  \item{spaMM}{\code{\link[spaMM]{fitme}}}
 
   \item{tibble}{\code{\link[tibble]{as_tibble}}}
 }}

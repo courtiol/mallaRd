@@ -61,3 +61,17 @@ NULL
 #'
 NULL
 
+#' The fit of the full (best) model
+#'
+#' This object contains the model fitted with the function [fit()] as shown in `?mallaRd`.
+#'
+#' @name best_fit
+#' @docType data
+#' @format a `HLfit` object produced by spaMM
+#' @references this study
+#' @keywords model
+#' @seealso [fit()]
+#' @examples
+#' best_fit
+#'
+NULL

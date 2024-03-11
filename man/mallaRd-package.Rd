@@ -3,7 +3,6 @@
 \docType{package}
 \name{mallaRd-package}
 \alias{mallaRd-package}
-\alias{_PACKAGE}
 \alias{mallaRd}
 \title{mallaRd: Breeding output and breeding site fidelity of mallards in Berlin, Germany}
 \description{
@@ -16,10 +15,10 @@ All three datasets used in the workflow below are readily available after loadin
 (\code{data_raw}, \code{data_all} and \code{data_model}) but the workflow below shows how we created such
 datasets starting from the raw data file stored in the subfolder extdata of this package.
 
-Note that the workflow relies on functions from other packages (e.g. \pkg{dplyr}), but we reexported
-these functions so you don't have to load these packages as long as \strong{mallaRd} is loaded. If
-you want to expand upon the proposed workflow and require more functions, you will however have
-to load such packages explicitly.
+Note that the workflow relies on functions from other packages (e.g. \pkg{dplyr}), but we
+reexported these functions so you don't have to load these packages as long as \strong{mallaRd} is
+loaded. If you want to expand upon the proposed workflow and require more functions, you will
+however have to load such packages explicitly.
 }
 \examples{
 
@@ -127,7 +126,7 @@ data_model <- prepare_data(data_all)
 
 ## Descriptive statistics for the dataset used fo modelling
 
-### many statistics are directly provided by the table above displayed while calling `prepare_data() `
+### many statistics are directly provided by the table above displayed while calling `prepare_data()`
 
 ### total number of breeding events (nrow + 1/duck)
 nrow(data_model) + howmany(data_model$individual_ID)
@@ -148,10 +147,18 @@ cor_matrix <- cor(data_model[,
     "trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z",
     "populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z")])
 diag(cor_matrix) <- NA
-cor_matrix[c("trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z"),
-           c("trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z")] <- NA
-cor_matrix[c("populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z"),
-           c("populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z")] <- NA
+cor_matrix[c("trafficvolume500_previous_z",
+             "trafficvolume1000_previous_z",
+             "trafficvolume2000_previous_z"),
+           c("trafficvolume500_previous_z",
+             "trafficvolume1000_previous_z",
+             "trafficvolume2000_previous_z")] <- NA
+cor_matrix[c("populationdensity500_previous_z",
+             "populationdensity1000_previous_z",
+             "populationdensity2000_previous_z"),
+           c("populationdensity500_previous_z",
+             "populationdensity1000_previous_z",
+             "populationdensity2000_previous_z")] <- NA
 range(cor_matrix, na.rm = TRUE)
 # [1] -0.1119443  0.6505292
 
@@ -164,10 +171,10 @@ formulas_df <- prepare_formulas()
 
 ## number of different models to fit
 nrow(formulas_df)
-# [1] 4096
+# [1] 27
 
 packageVersion("spaMM")
-# [1] ‘4.4.16’
+# [1] ‘4.4.23.1’
 
 packageVersion("DHARMa")
 # [1] ‘0.4.6’
@@ -252,6 +259,10 @@ howmany(data_all$ring_number[!is.na(data_all$wing_length_mm)]) # ducks
 ### mean/sd hatching day of the year
 mean(data_all$hatch_doy, na.rm = TRUE)
 # [1] 146.5946
+as.Date("2019/01/01") + mean(data_all$hatch_doy, na.rm = TRUE)
+# "2020-05-27"
+as.Date("2020/01/01") + mean(data_all$hatch_doy, na.rm = TRUE) # leap year
+# "2020-05-26"
 sd(data_all$hatch_doy, na.rm = TRUE)
 # [1] 23.3779
 
@@ -266,7 +277,7 @@ howmany(data_all$ring_number[!is.na(data_all$hatch_doy)]) # ducks
 # [1] 771
 
 
-# Results: 3.2 Breeding site selection ----------------------------------------------------------
+# Results: 3.2 Type of breeding site ------------------------------------------------------------
 
 ## descriptive statistics
 
@@ -320,8 +331,14 @@ sum(data_all$habitat_type_unknown) # breeding events
 howmany(data_all$ring_number[data_all$habitat_type_unknown]) # ducks
 # [1] 16
 
+## stats for fig 2
+nrow(data_all) # breeding events
+# [1] 1634
+howmany(data_all$ring_number)
+# [1] 795
 
-# Results: 3.3 Breeding site fidelity -------------------------------------------------------------
+
+# Results: 3.3 Breeding site fidelity -----------------------------------------------------------
 
 ## descriptive statistics
 
@@ -356,6 +373,7 @@ sd(captures_per_duck$n)
 # [1] 1.110232
 
 ## percentage of ducks observed multiple times that used the same site more than once
+## note: also used in abstract
 data_all |>
   filter(!is.na(.data$ring_number)) |>
   mutate(n_obs = n(), .by = "ring_number") |>
@@ -377,12 +395,24 @@ howmany(data_all$location_ID[!is.na(data_all$ring_number)])
 ## number of breeding sites used by more than one known ducks
 data_all |>
   filter(!is.na(.data$ring_number), !is.na(.data$location_ID)) |>
-  summarise(n_ducks = howmany(ring_number), .by = "location_ID") |>
+  mutate(n_usage_breedingsite = n(), .by = "location_ID") |>
+  filter(.data$n_usage_breedingsite > 1) |>
+  summarise(n_ducks = howmany(ring_number), .by = "location_ID") -> reocuring_breeding_site
+
+### number of breeding sites used more than once
+howmany(reocuring_breeding_site$location_ID)
+# [1] 153
+
+### proportion of breeding sites used more than once
+howmany(reocuring_breeding_site$location_ID)/howmany(data_all$location_ID[!is.na(data_all$ring_number)])
+
+### number of breeding sites used by more than one duck
+reocuring_breeding_site |>
   count(n_ducks > 1)
  # # A tibble: 2 × 2
  #   `n_ducks > 1`     n
  #   <lgl>         <int>
- # 1 FALSE           799
+ # 1 FALSE            89
  # 2 TRUE             64
 
 ## stats for fig 3
@@ -395,20 +425,313 @@ sum(!is.na(data_all$ring_number) & !is.na(data_all$location_ID))
 howmany(data_all$ring_number[!is.na(data_all$location_ID)])
 # [1] 794
 
+### breeding events for recaptured individuals
+nrow(data_model)
+# [1] 301
+
+### number of recaptured individuals
+howmany(data_model$individual_ID)
+# [1] 180
+
 ### breeding events at site mostly used by ducks
 
 ### fitting models
-## NOTE: this takes around 1 min usng 100 CPUs
+## NOTE: this takes 40 sec using 27 CPUs
 ## uncomment to run and adjust ncpus to your system
-# fitting_results <- fit(formulas = formulas_df, data = data_model, ncpus = 120)
+# fitting_results <- fit(formulas = formulas_df, data = data_model, ncpus = 27)
 
 ## for developer only: save the created data into the package
 # usethis::use_data(fitting_results, overwrite = TRUE)
 
 ### best model
 fitting_results |>
-  filter(.data$rank_mAIC == min(.data$rank_mAIC) | .data$rank_cAIC == min(.data$rank_cAIC)) |>
-  pull(.data$formula)
+  filter(.data$logLik == max(.data$logLik)) |>
+  pull(.data$formula) -> best_formula
+best_formula
+# [1] "return~habitat_type_previous+PSW1000_previous+trafficvolume2000_previous_z+
+# populationdensity500_previous_z+brood_size_previous_z+delta_season+relocation_distance_z+
+# (1|individual_ID)+(1|location_ID)+1"
+
+### alternative proxies retained amongst best models
+fitting_results |>
+  filter(.data$logLik >= (max(.data$logLik) - qchisq(0.95, df = 1, lower.tail = TRUE)/2)) -> top_models
+ nrow(top_models)
+ # [1] 18
+
+ top_models |>
+  select("formula") |>
+  mutate(DNSW =                  grepl("DNSW", .data$formula),
+         PSW1000 =              grepl("PSW1000", .data$formula),
+         PSW2000 =              grepl("PSW2000", .data$formula),
+         trafficvolume500 =      grepl("trafficvolume500", .data$formula),
+         trafficvolume1000 =     grepl("trafficvolume1000", .data$formula),
+         trafficvolume2000 =     grepl("trafficvolume2000", .data$formula),
+         populationdensity500 =  grepl("populationdensity500", .data$formula),
+         populationdensity1000 = grepl("populationdensity1000", .data$formula),
+         populationdensity2000 = grepl("populationdensity2000", .data$formula)) |>
+   select(-"formula") |>
+   summarise(across(everything(), any)) |> t()
+#                        [,1]
+# DNSW                   TRUE
+# PSW1000                TRUE
+# PSW2000                TRUE
+# trafficvolume500       TRUE
+# trafficvolume1000      TRUE
+# trafficvolume2000      TRUE
+# populationdensity500   TRUE
+# populationdensity1000  TRUE
+# populationdensity2000 FALSE
+
+
+### best fit
+best_fit <- fitme(as.formula(best_formula),
+                  data = data_model,
+                  family = stats::binomial(link = "logit"),
+                  method = "PQL/L")
+best_fit
+# formula: return ~ habitat_type_previous + PSW1000_previous + trafficvolume2000_previous_z +
+#     populationdensity500_previous_z + brood_size_previous_z +
+#     delta_season + relocation_distance_z + (1 | individual_ID) +
+#     (1 | location_ID) + 1
+# Estimation of fixed effects by h-likelihood approximation.
+# Estimation of lambda by 'outer' ML, maximizing logL.
+# family: binomial( link = logit )
+#  ------------ Fixed effects (beta) ------------
+#                                   Estimate Cond. SE  t-value
+# (Intercept)                        0.23537   0.4407  0.53409
+# habitat_type_previouscourtyard    -0.24255   0.5277 -0.45964
+# habitat_type_previousother        -0.56527   1.5568 -0.36309
+# habitat_type_previousroof_terrace  0.01982   0.4589  0.04319
+# PSW1000_previousyes               -0.02228   0.4075 -0.05469
+# trafficvolume2000_previous_z      -0.12668   0.2196 -0.57680
+# populationdensity500_previous_z   -0.42710   0.2209 -1.93375
+# brood_size_previous_z              0.11891   0.1767  0.67291
+# delta_seasonsame breeding season   0.78563   0.4459  1.76201
+# relocation_distance_z             -0.31289   0.1871 -1.67239
+#  --------------- Random effects ---------------
+# Family: gaussian( link = identity )
+#            --- Variance parameters ('lambda'):
+# lambda = var(u) for u ~ Gaussian;
+#    individua.  :  0.003021
+#    location_.  :  3.492
+# # of obs: 301; # of groups: individua., 180; location_., 197
+#  ------------- Likelihood values  -------------
+#                          logLik
+#        h-likelihood:  -65.56095
+# logL       (p_v(h)): -177.47029
+
+## for developer only: save the created data into the package
+# usethis::use_data(best_fit, overwrite = TRUE)
+
+### test of overall model
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_null <- update(best_fit, . ~ 1)
+# test_null <- compute_LRT(best_fit, fit_null, ncpus = 100)
+# test_null
+#      chi2_LR df      p_value
+# p_v 42.41568 11 1.372163e-05
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.000999
+# Bartlett-corrected LR test:
+#      chi2_LR df      p_value
+# p_v 49.28926 11 8.397054e-07
+
+### test all fixed effects
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_fix <- update(best_fit, . ~ 1 + (1|individual_ID) + (1|location_ID))
+# test_fix <- compute_LRT(best_fit, fit_no_fix, ncpus = 100)
+# test_fix
+#      chi2_LR df    p_value
+# p_v 20.10444  9 0.01727868
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.03
+# Bartlett-corrected LR test:
+#      chi2_LR df    p_value
+# p_v 18.14402  9 0.03353894
+
+### test of habitat type
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_habitat_type <- update(best_fit, . ~ . - habitat_type_previous)
+# test_habitat_type <- compute_LRT(best_fit, fit_no_habitat_type, ncpus = 100)
+# test_habitat_type
+#       chi2_LR df   p_value
+# p_v 0.6766501  3 0.8786819
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.903
+# Bartlett-corrected LR test:
+#       chi2_LR df   p_value
+# p_v 0.5536946  3 0.9069461
+
+### test of presence of suitable water
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_PSW1000 <- update(best_fit, . ~ . - PSW1000_previous)
+# test_PSW1000 <- compute_LRT(best_fit, fit_no_PSW1000, ncpus = 100)
+# test_PSW1000
+#        chi2_LR df   p_value
+# p_v 0.00129019  1 0.9713468
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.973
+# Bartlett-corrected LR test:
+#         chi2_LR df   p_value
+# p_v 0.001202513  1 0.9723371
+
+### test of human related disturbance as a whole
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_HD <- update(best_fit, . ~ . - trafficvolume2000_previous_z - populationdensity500_previous_z)
+# test_HD <- compute_LRT(best_fit, fit_no_HD, ncpus = 100)
+# test_HD
+#      chi2_LR df    p_value
+# p_v 8.768916  2 0.01246964
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.027
+# Bartlett-corrected LR test:
+#      chi2_LR df    p_value
+# p_v 7.606029  2 0.02230343
+
+### test of traffic volume
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_traffic <- update(best_fit, . ~ . - trafficvolume2000_previous_z)
+# test_traffic <- compute_LRT(best_fit, fit_no_traffic, ncpus = 100)
+# test_traffic
+#       chi2_LR df   p_value
+# p_v 0.4229285  1 0.5154794
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.512
+# Bartlett-corrected LR test:
+#       chi2_LR df   p_value
+# p_v 0.3964381  1 0.5289345
+
+### test of human pop density
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_density <- update(best_fit, . ~ . - populationdensity500_previous_z)
+# test_density <- compute_LRT(best_fit, fit_no_density, ncpus = 100)
+# test_density
+#      chi2_LR df    p_value
+# p_v 5.434193  1 0.01974621
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.03
+# Bartlett-corrected LR test:
+#      chi2_LR df    p_value
+# p_v 4.784145  1 0.02872291
+
+### test of previous breeding success
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_BS <- update(best_fit, . ~ . - brood_size_previous_z)
+# test_BS <- compute_LRT(best_fit, fit_no_BS, ncpus = 100)
+# test_BS
+#      chi2_LR df  p_value
+# p_v 0.689293  1 0.406405
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.423
+# Bartlett-corrected LR test:
+#       chi2_LR df  p_value
+# p_v 0.6679764  1 0.413758
+
+### test of delta breeding season
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_season <- update(best_fit, . ~ . - delta_season)
+# test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100)
+# test_season
+#      chi2_LR df    p_value
+# p_v 3.973929  1 0.04620983
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.042
+# Bartlett-corrected LR test:
+#      chi2_LR df    p_value
+# p_v 4.233671  1 0.03962964
+
+### test of relocation distance
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_relocdist <- update(best_fit, . ~ . - relocation_distance_z)
+# test_relocdist <- compute_LRT(best_fit, fit_no_relocdist, ncpus = 100)
+# test_relocdist
+#      chi2_LR df    p_value
+# p_v 4.282736  1 0.03850132
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.043
+# Bartlett-corrected LR test:
+#      chi2_LR df    p_value
+# p_v 4.073295  1 0.04356622
+
+### test all random effects at once
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_random <- update(best_fit, . ~ . - (1|individual_ID) + (1|location_ID))
+# test_random <- compute_LRT(best_fit, fit_no_fix, ncpus = 100)
+# test_random
+#      chi2_LR df    p_value
+# p_v 20.10444  9 0.01727868
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.038
+# Bartlett-corrected LR test:
+#      chi2_LR df    p_value
+# p_v 17.99993  9 0.03517432
+
+### test random effect of individual
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# best_fit_REML <- update(best_fit, method = "PQL")
+# fit_no_ID <- update(best_fit_REML, . ~ . - (1|individual_ID))
+# test_ID <- compute_LRT(best_fit_REML, fit_no_ID, ncpus = 100)
+# test_ID
+# ======== Bootstrap: ========
+# Raw simulated p-value: 0.000999
+# 2*(logLik(best_fit_REML) - logLik(fit_no_ID)) ## LRT
+# 10.46622
+
+### test random effect of location
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## uncomment to run and adjust ncpus to your system
+# fit_no_loc <- update(best_fit_REML, . ~ . - (1|location_ID))
+# test_loc <- compute_LRT(best_fit_REML, fit_no_loc, ncpus = 100)
+# test_loc
+# ======== Bootstrap: ========
+# Raw simulated p-value: 0.000999
+# 2*(logLik(best_fit_REML) - logLik(fit_no_loc)) ## LRT
+# 14.59554
+
+
+# Figures ---------------------------------------------------------------------------------------
+
+## set resolution
+showtext::showtext_opts(dpi = 300)
+
+## figure 1
+dir.create("figures")
+figure1(data_all)
+ggsave("figures/fig1.pdf", width = 19, height = 12, units = "cm")
+ggsave("figures/fig1.png", width = 19, height = 12, units = "cm")
+
+figure2(data_all)
+ggsave("figures/fig2.pdf", width = 19, height = 15, units = "cm")
+ggsave("figures/fig2.png", width = 19, height = 15, units = "cm")
+
+figure3(data_all, data_model)
+ggsave("figures/fig3.pdf", width = 19, height = 9, units = "cm")
+ggsave("figures/fig3.png", width = 19, height = 9, units = "cm")
+
+# Tables ----------------------------------------------------------------------------------------
+
+## Table 2 stats
+
+### breeding events for recaptured individuals
+nrow(data_model)
+# [1] 301
+
+### number of recaptured individuals
+howmany(data_model$individual_ID)
+# [1] 180
+
 
 }
 \references{

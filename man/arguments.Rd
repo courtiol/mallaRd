@@ -4,9 +4,17 @@
 \alias{arguments}
 \title{Definition of the function arguments}
 \arguments{
-\item{data}{the dataframe containing the data used for model fitting}
+\item{best_fit}{the fit of the model with the best predictive power}
+
+\item{boot.repl}{the number of bootstrap replicates}
+
+\item{data}{the dataframe containing the data used by the function}
+
+\item{data_model}{the dataframe containing the data used for model fitting}
 
 \item{fit}{a fitted model}
+
+\item{fit_null}{a fitted model more simple than the other fit it is compared to}
 
 \item{formulas}{the dataframe of formulas created with \code{prepare_formulas()}}
 
@@ -24,11 +32,19 @@
 
 \item{ncpus}{the number of CPU cores to use for parallel processing (default = 2)}
 
+\item{predictor}{the name of the focal predictor}
+
 \item{rawdata}{the data frame containing the raw data}
+
+\item{seed}{the seed to be used for bootstrapping}
 
 \item{threshold_distance_m}{a number specifying the maximum distance between two spatial points belonging to the same group}
 
 \item{x}{a vector}
+
+\item{xlab}{the name for the x-axis}
+
+\item{ymax}{a vector defining the maximal values along the y axis (plot per plot)}
 }
 \description{
 Here is the list of most function arguments used in the package.

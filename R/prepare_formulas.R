@@ -10,26 +10,20 @@ prepare_formulas <- function() {
 
   base_formula <- "return ~ "
 
-  add_formula <- expand.grid(habitat_type = c("habitat_type_previous", ""),
+  add_formula <- expand.grid(habitat_type = c("habitat_type_previous"),
                              habitat_structure = c("DNSW_previous_z",
                                                    "PSW1000_previous",
-                                                   "PSW2000_previous",
-                                                   ""),
+                                                   "PSW2000_previous"),
                              traffic_volume = c("trafficvolume500_previous_z",
                                                 "trafficvolume1000_previous_z",
-                                                "trafficvolume2000_previous_z",
-                                                ""),
+                                                "trafficvolume2000_previous_z"),
                              population_density = c("populationdensity500_previous_z",
                                                     "populationdensity1000_previous_z",
-                                                    "populationdensity2000_previous_z",
-                                                    ""),
-                             brood_size = c("brood_size_previous_z", ""),
-                             breeding_season = c("delta_season", ""),
-                             relocation_distance = c("relocation_distance_z", ""),
-                             random = c("(1 | individual_ID)",
-                                        "(1 | location_ID)",
-                                        "(1 | individual_ID) + (1 | location_ID)",
-                                        ""),
+                                                    "populationdensity2000_previous_z"),
+                             brood_size = c("brood_size_previous_z"),
+                             breeding_season = c("delta_season"),
+                             relocation_distance = c("relocation_distance_z"),
+                             random = c("(1 | individual_ID) + (1 | location_ID)"),
                              intercept = "1") ## important for processed formulas not ending with "+"
 
   all_formulas <- apply(cbind(base_formula, add_formula), 1, paste, collapse = " + ")

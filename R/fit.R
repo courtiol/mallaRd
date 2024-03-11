@@ -38,6 +38,8 @@ fit <- function(formulas, data, ncpus = 2) {
 
   job$rank_mAIC <- rank(job$mAIC)
   job$rank_cAIC <- rank(job$cAIC)
+  job$delta_mAIC <- job$mAIC - min(job$mAIC)
+  job$delta_cAIC <- job$cAIC - min(job$cAIC)
 
   dplyr::left_join(formulas, job)
 }
@@ -64,3 +66,80 @@ TjurD <- function(fit) {
                      prob_return_when_swap = mean(.data$prob[.data$return == 0]),
                      TjurD = .data$prob_return_when_return - .data$prob_return_when_swap)
 }
+
+
+#' Compute stuff on the fit
+#'
+#' @inheritParams arguments
+#'
+#' @return a tibble with information on the fit
+#' @export
+#'
+#' @examples
+#' summarize_fit(best_fit)
+#'
+summarize_fit <- function(best_fit) {
+
+  extract_formula <- function(fit) {
+    paste(as.character(stats::formula(fit))[c(2, 3)], collapse = " ~ ")
+  }
+
+  summary_selected_fits <- tibble::tibble(model = c("best_fit",
+                                                    "best_fit_fix_only", "best_fit_random_only",
+                                                    "best_fit_fix_ID", "best_fit_fix_location",
+                                                    "null_ID", "null_location",
+                                                    "null"))
+
+  best_fit_fix_only     <- stats::update(best_fit, . ~ . - (1|individual_ID) - (1|location_ID))
+  best_fit_random_only  <- stats::update(best_fit, . ~ 1 + (1|individual_ID) + (1|location_ID))
+  best_fit_fix_ID       <- stats::update(best_fit, . ~ . - (1|location_ID))
+  best_fit_fix_location <- stats::update(best_fit, . ~ . - (1|individual_ID))
+  null_ID               <- stats::update(best_fit, . ~ 1 + ( 1|individual_ID))
+  null_location         <- stats::update(best_fit, . ~ 1 + (1|location_ID))
+  null                  <- stats::update(best_fit, . ~ 1)
+
+  summary_selected_fits$formula    <- sapply(summary_selected_fits$model, \(fit) extract_formula(get(fit)))
+  summary_selected_fits$mAIC       <- sapply(summary_selected_fits$model, \(fit) stats::AIC(get(fit), verbose = FALSE, short.names = TRUE)["mAIC"])
+  summary_selected_fits$cAIC       <- sapply(summary_selected_fits$model, \(fit) stats::AIC(get(fit), verbose = FALSE, short.names = TRUE)["cAIC"])
+  summary_selected_fits$TjursD     <- sapply(summary_selected_fits$model, \(fit)  TjurD(get(fit))$TjurD)
+  summary_selected_fits$delta_mAIC <- summary_selected_fits$mAIC - min(summary_selected_fits$mAIC)
+  summary_selected_fits$delta_cAIC <- summary_selected_fits$cAIC - min(summary_selected_fits$cAIC)
+
+  summary_selected_fits$model <- dplyr::case_match(summary_selected_fits$model,
+                                                   "best_fit" ~ "best model",
+                                                   "best_fit_fix_only" ~ "fixed effects only",
+                                                   "best_fit_random_only" ~ "random effects only",
+                                                   "best_fit_fix_ID" ~ "fixed effects + random individual",
+                                                   "best_fit_fix_location" ~ "fixed effects + random location",
+                                                   "null_ID" ~ "individual only",
+                                                   "null_location" ~ "location only",
+                                                   "null" ~ "null model")
+
+  summary_selected_fits$model <- factor(summary_selected_fits$model, levels = c("best model", "fixed effects only",
+                                                                                "random effects only", "fixed effects + random individual",
+                                                                                "fixed effects + random location", "individual only",
+                                                                                "location only", "null model"))
+
+  summary_selected_fits$group  <- factor(c("fixed+random", "fixed",
+                                          "random", "fixed+random", "fixed+random",
+                                          "random", "random", "null model"))
+
+  summary_selected_fits
+}
+
+#' Compute Likelihood Ratio Test using parametric bootstrap
+#'
+#' @inheritParams arguments
+#'
+#' @return the output of [spaMM::LRT]
+#' @export
+#'
+compute_LRT <- function(fit, fit_null, ncpus = 2, boot.repl = 1000, seed = 123) {
+  nbcores <- parallel::detectCores()
+  nbcores <- min(c(nbcores, ncpus))
+  spaMM::spaMM.options(nb_cores = nbcores)
+  requireNamespace("doSNOW")
+  spaMM::LRT(fit, fit_null, boot.repl = boot.repl, seed = seed)
+
+}
+

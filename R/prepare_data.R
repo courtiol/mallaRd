@@ -89,7 +89,11 @@ prepare_data <- function(rawdata) {
                                   "DNSW_previous",
                                   "trafficvolume500_previous", "trafficvolume1000_previous", "trafficvolume2000_previous",
                                   "populationdensity500_previous", "populationdensity1000_previous", "populationdensity2000_previous"),
-                                .fns = \(x) scale(x)[, 1], .names = "{.col}_z")) |>
+                                .fns = \(x) {zz <- scale(x)[, 1]
+                                             attr(zz, "mean") <- mean(x)
+                                             attr(zz, "sd") <- stats::sd(x)
+                                             zz},
+                                .names = "{.col}_z")) |>
     dplyr::select("individual_ID",
                   "date", "return",
                   "habitat_type", "habitat_type_previous",
