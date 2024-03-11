@@ -437,11 +437,14 @@ howmany(data_model$individual_ID)
 
 ### fitting models
 ## NOTE: this takes 40 sec using 27 CPUs
-## uncomment to run and adjust ncpus to your system
-# fitting_results <- fit(formulas = formulas_df, data = data_model, ncpus = 27)
+## turn fitmodel to TRUE to run and do adjust ncpus to your system
+fitmodel <- FALSE
+if (fitmodel) {
+  fitting_results <- fit(formulas = formulas_df, data = data_model, ncpus = 27)
 
-## for developer only: save the created data into the package
-# usethis::use_data(fitting_results, overwrite = TRUE)
+  ## for developer only: save the created data into the package
+  # usethis::use_data(fitting_results, overwrite = TRUE)
+}
 
 ### best model
 fitting_results |>
@@ -452,7 +455,7 @@ best_formula
 # populationdensity500_previous_z+brood_size_previous_z+delta_season+relocation_distance_z+
 # (1|individual_ID)+(1|location_ID)+1"
 
-### alternative proxies retained amongst best models
+### alternative proxies retained among best models
 fitting_results |>
   filter(.data$logLik >= (max(.data$logLik) - qchisq(0.95, df = 1, lower.tail = TRUE)/2)) -> top_models
  nrow(top_models)
@@ -461,8 +464,8 @@ fitting_results |>
  top_models |>
   select("formula") |>
   mutate(DNSW =                  grepl("DNSW", .data$formula),
-         PSW1000 =              grepl("PSW1000", .data$formula),
-         PSW2000 =              grepl("PSW2000", .data$formula),
+         PSW1000 =               grepl("PSW1000", .data$formula),
+         PSW2000 =               grepl("PSW2000", .data$formula),
          trafficvolume500 =      grepl("trafficvolume500", .data$formula),
          trafficvolume1000 =     grepl("trafficvolume1000", .data$formula),
          trafficvolume2000 =     grepl("trafficvolume2000", .data$formula),
@@ -525,10 +528,12 @@ best_fit
 
 ### test of overall model
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_null <- update(best_fit, . ~ 1)
-# test_null <- compute_LRT(best_fit, fit_null, ncpus = 100)
-# test_null
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_null <- update(best_fit, . ~ 1)
+  test_null <- compute_LRT(best_fit, fit_null, ncpus = 100)
+  test_null
 #      chi2_LR df      p_value
 # p_v 42.41568 11 1.372163e-05
 #  ======== Bootstrap: ========
@@ -536,169 +541,206 @@ best_fit
 # Bartlett-corrected LR test:
 #      chi2_LR df      p_value
 # p_v 49.28926 11 8.397054e-07
+}
 
 ### test all fixed effects
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_fix <- update(best_fit, . ~ 1 + (1|individual_ID) + (1|location_ID))
-# test_fix <- compute_LRT(best_fit, fit_no_fix, ncpus = 100)
-# test_fix
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_fix <- update(best_fit, . ~ 1 + (1|individual_ID) + (1|location_ID))
+  test_fix <- compute_LRT(best_fit, fit_no_fix, ncpus = 100)
+  test_fix
 #      chi2_LR df    p_value
 # p_v 20.10444  9 0.01727868
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.03
+# Raw simulated p-value: 0.036
 # Bartlett-corrected LR test:
 #      chi2_LR df    p_value
-# p_v 18.14402  9 0.03353894
+# p_v 17.66125  9 0.03931335
+}
 
 ### test of habitat type
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_habitat_type <- update(best_fit, . ~ . - habitat_type_previous)
-# test_habitat_type <- compute_LRT(best_fit, fit_no_habitat_type, ncpus = 100)
-# test_habitat_type
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_habitat_type <- update(best_fit, . ~ . - habitat_type_previous)
+  test_habitat_type <- compute_LRT(best_fit, fit_no_habitat_type, ncpus = 100)
+  test_habitat_type
 #       chi2_LR df   p_value
 # p_v 0.6766501  3 0.8786819
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.903
+# Raw simulated p-value: 0.9
 # Bartlett-corrected LR test:
 #       chi2_LR df   p_value
-# p_v 0.5536946  3 0.9069461
+# p_v 0.5571846  3 0.9061601
+}
 
 ### test of presence of suitable water
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_PSW1000 <- update(best_fit, . ~ . - PSW1000_previous)
-# test_PSW1000 <- compute_LRT(best_fit, fit_no_PSW1000, ncpus = 100)
-# test_PSW1000
-#        chi2_LR df   p_value
-# p_v 0.00129019  1 0.9713468
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_PSW1000 <- update(best_fit, . ~ . - PSW1000_previous)
+  test_PSW1000 <- compute_LRT(best_fit, fit_no_PSW1000, ncpus = 100)
+  test_PSW1000
+#         chi2_LR df   p_value
+# p_v 0.001290191  1 0.9713468
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.973
+# Raw simulated p-value: 0.974
 # Bartlett-corrected LR test:
 #         chi2_LR df   p_value
-# p_v 0.001202513  1 0.9723371
+# p_v 0.001049238  1 0.9741595
+}
 
 ### test of human related disturbance as a whole
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_HD <- update(best_fit, . ~ . - trafficvolume2000_previous_z - populationdensity500_previous_z)
-# test_HD <- compute_LRT(best_fit, fit_no_HD, ncpus = 100)
-# test_HD
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_HD <- update(best_fit, . ~ . - trafficvolume2000_previous_z - populationdensity500_previous_z)
+  test_HD <- compute_LRT(best_fit, fit_no_HD, ncpus = 100)
+  test_HD
 #      chi2_LR df    p_value
 # p_v 8.768916  2 0.01246964
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.027
+# Raw simulated p-value: 0.02
 # Bartlett-corrected LR test:
 #      chi2_LR df    p_value
-# p_v 7.606029  2 0.02230343
+# p_v 7.792871  2 0.02031419
+}
 
 ### test of traffic volume
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_traffic <- update(best_fit, . ~ . - trafficvolume2000_previous_z)
-# test_traffic <- compute_LRT(best_fit, fit_no_traffic, ncpus = 100)
-# test_traffic
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_traffic <- update(best_fit, . ~ . - trafficvolume2000_previous_z)
+  test_traffic <- compute_LRT(best_fit, fit_no_traffic, ncpus = 100)
+  test_traffic
 #       chi2_LR df   p_value
 # p_v 0.4229285  1 0.5154794
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.512
+# Raw simulated p-value: 0.539
 # Bartlett-corrected LR test:
 #       chi2_LR df   p_value
-# p_v 0.3964381  1 0.5289345
+# p_v 0.3809129  1 0.5371151
+}
 
 ### test of human pop density
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_density <- update(best_fit, . ~ . - populationdensity500_previous_z)
-# test_density <- compute_LRT(best_fit, fit_no_density, ncpus = 100)
-# test_density
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_density <- update(best_fit, . ~ . - populationdensity500_previous_z)
+  test_density <- compute_LRT(best_fit, fit_no_density, ncpus = 100)
+  test_density
 #      chi2_LR df    p_value
 # p_v 5.434193  1 0.01974621
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.03
+# Raw simulated p-value: 0.039
 # Bartlett-corrected LR test:
 #      chi2_LR df    p_value
-# p_v 4.784145  1 0.02872291
+# p_v 4.608996  1 0.03180465
+}
 
 ### test of previous breeding success
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_BS <- update(best_fit, . ~ . - brood_size_previous_z)
-# test_BS <- compute_LRT(best_fit, fit_no_BS, ncpus = 100)
-# test_BS
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_BS <- update(best_fit, . ~ . - brood_size_previous_z)
+  test_BS <- compute_LRT(best_fit, fit_no_BS, ncpus = 100)
+  test_BS
 #      chi2_LR df  p_value
 # p_v 0.689293  1 0.406405
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.423
+# Raw simulated p-value: 0.425
 # Bartlett-corrected LR test:
-#       chi2_LR df  p_value
-# p_v 0.6679764  1 0.413758
+#       chi2_LR df   p_value
+# p_v 0.6385657  1 0.4242307
+}
 
 ### test of delta breeding season
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_season <- update(best_fit, . ~ . - delta_season)
-# test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100)
-# test_season
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_season <- update(best_fit, . ~ . - delta_season)
+  test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100)
+  test_season ## NB: significant for other seeds than default one
 #      chi2_LR df    p_value
 # p_v 3.973929  1 0.04620983
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.042
+# Raw simulated p-value: 0.0559
 # Bartlett-corrected LR test:
 #      chi2_LR df    p_value
-# p_v 4.233671  1 0.03962964
+# p_v 3.846168  1 0.04985977
+}
 
 ### test of relocation distance
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_relocdist <- update(best_fit, . ~ . - relocation_distance_z)
-# test_relocdist <- compute_LRT(best_fit, fit_no_relocdist, ncpus = 100)
-# test_relocdist
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_relocdist <- update(best_fit, . ~ . - relocation_distance_z)
+  test_relocdist <- compute_LRT(best_fit, fit_no_relocdist, ncpus = 100)
+  test_relocdist
 #      chi2_LR df    p_value
 # p_v 4.282736  1 0.03850132
 #  ======== Bootstrap: ========
 # Raw simulated p-value: 0.043
 # Bartlett-corrected LR test:
 #      chi2_LR df    p_value
-# p_v 4.073295  1 0.04356622
+# p_v 4.198098  1 0.04046935
+}
 
 ### test all random effects at once
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_random <- update(best_fit, . ~ . - (1|individual_ID) + (1|location_ID))
-# test_random <- compute_LRT(best_fit, fit_no_fix, ncpus = 100)
-# test_random
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_random <- update(best_fit, . ~ . - (1|individual_ID) + (1|location_ID))
+  test_random <- compute_LRT(best_fit, fit_no_fix, ncpus = 100)
+  test_random
 #      chi2_LR df    p_value
 # p_v 20.10444  9 0.01727868
 #  ======== Bootstrap: ========
-# Raw simulated p-value: 0.038
+# Raw simulated p-value: 0.036
 # Bartlett-corrected LR test:
 #      chi2_LR df    p_value
-# p_v 17.99993  9 0.03517432
+# p_v 17.66125  9 0.03931335
+}
 
 ### test random effect of individual
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# best_fit_REML <- update(best_fit, method = "PQL")
-# fit_no_ID <- update(best_fit_REML, . ~ . - (1|individual_ID))
-# test_ID <- compute_LRT(best_fit_REML, fit_no_ID, ncpus = 100)
-# test_ID
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  best_fit_REML <- update(best_fit, method = "PQL")
+  fit_no_ID <- update(best_fit_REML, . ~ . - (1|individual_ID))
+  test_ID <- compute_LRT(best_fit_REML, fit_no_ID, ncpus = 100)
+  test_ID
 # ======== Bootstrap: ========
 # Raw simulated p-value: 0.000999
-# 2*(logLik(best_fit_REML) - logLik(fit_no_ID)) ## LRT
+2*(logLik(best_fit_REML) - logLik(fit_no_ID)) ## LRT
 # 10.46622
+}
 
 ### test random effect of location
 ## NOTE: this takes ca. 60 sec using 100 CPUs
-## uncomment to run and adjust ncpus to your system
-# fit_no_loc <- update(best_fit_REML, . ~ . - (1|location_ID))
-# test_loc <- compute_LRT(best_fit_REML, fit_no_loc, ncpus = 100)
-# test_loc
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  fit_no_loc <- update(best_fit_REML, . ~ . - (1|location_ID))
+  test_loc <- compute_LRT(best_fit_REML, fit_no_loc, ncpus = 100)
+  test_loc
 # ======== Bootstrap: ========
 # Raw simulated p-value: 0.000999
-# 2*(logLik(best_fit_REML) - logLik(fit_no_loc)) ## LRT
+2*(logLik(best_fit_REML) - logLik(fit_no_loc)) ## LRT
 # 14.59554
+}
 
 
 # Figures ---------------------------------------------------------------------------------------
