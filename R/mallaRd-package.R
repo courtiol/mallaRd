@@ -584,13 +584,13 @@
 #'   fit_no_PSW1000 <- update(best_fit, . ~ . - PSW1000_previous)
 #'   test_PSW1000 <- compute_LRT(best_fit, fit_no_PSW1000, ncpus = 100)
 #'   test_PSW1000
-#' #        chi2_LR df   p_value
-#' # p_v 0.00129019  1 0.9713468
+#' #         chi2_LR df   p_value
+#' # p_v 0.001290191  1 0.9713468
 #' #  ======== Bootstrap: ========
-#' # Raw simulated p-value: 0.973
+#' # Raw simulated p-value: 0.974
 #' # Bartlett-corrected LR test:
 #' #         chi2_LR df   p_value
-#' # p_v 0.001202513  1 0.9723371
+#' # p_v 0.001049238  1 0.9741595
 #' }
 #'
 #' ### test of human related disturbance as a whole
@@ -604,10 +604,10 @@
 #' #      chi2_LR df    p_value
 #' # p_v 8.768916  2 0.01246964
 #' #  ======== Bootstrap: ========
-#' # Raw simulated p-value: 0.027
+#' # Raw simulated p-value: 0.02
 #' # Bartlett-corrected LR test:
 #' #      chi2_LR df    p_value
-#' # p_v 7.606029  2 0.02230343
+#' # p_v 7.792871  2 0.02031419
 #' }
 #'
 #' ### test of traffic volume
@@ -621,10 +621,10 @@
 #' #       chi2_LR df   p_value
 #' # p_v 0.4229285  1 0.5154794
 #' #  ======== Bootstrap: ========
-#' # Raw simulated p-value: 0.512
+#' # Raw simulated p-value: 0.539
 #' # Bartlett-corrected LR test:
 #' #       chi2_LR df   p_value
-#' # p_v 0.3964381  1 0.5289345
+#' # p_v 0.3809129  1 0.5371151
 #' }
 #'
 #' ### test of human pop density
@@ -638,10 +638,10 @@
 #' #      chi2_LR df    p_value
 #' # p_v 5.434193  1 0.01974621
 #' #  ======== Bootstrap: ========
-#' # Raw simulated p-value: 0.03
+#' # Raw simulated p-value: 0.039
 #' # Bartlett-corrected LR test:
 #' #      chi2_LR df    p_value
-#' # p_v 4.784145  1 0.02872291
+#' # p_v 4.608996  1 0.03180465
 #' }
 #'
 #' ### test of previous breeding success
@@ -655,10 +655,10 @@
 #' #      chi2_LR df  p_value
 #' # p_v 0.689293  1 0.406405
 #' #  ======== Bootstrap: ========
-#' # Raw simulated p-value: 0.423
+#' # Raw simulated p-value: 0.425
 #' # Bartlett-corrected LR test:
-#' #       chi2_LR df  p_value
-#' # p_v 0.6679764  1 0.413758
+#' #       chi2_LR df   p_value
+#' # p_v 0.6385657  1 0.4242307
 #' }
 #'
 #' ### test of delta breeding season
@@ -668,14 +668,14 @@
 #' if (doboot) {
 #'   fit_no_season <- update(best_fit, . ~ . - delta_season)
 #'   test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100)
-#'   test_season
+#'   test_season ## NB: significant for other seeds than default one
 #' #      chi2_LR df    p_value
 #' # p_v 3.973929  1 0.04620983
 #' #  ======== Bootstrap: ========
-#' # Raw simulated p-value: 0.042
+#' # Raw simulated p-value: 0.0559
 #' # Bartlett-corrected LR test:
 #' #      chi2_LR df    p_value
-#' # p_v 4.233671  1 0.03962964
+#' # p_v 3.846168  1 0.04985977
 #' }
 #'
 #' ### test of relocation distance
@@ -692,7 +692,7 @@
 #' # Raw simulated p-value: 0.043
 #' # Bartlett-corrected LR test:
 #' #      chi2_LR df    p_value
-#' # p_v 4.073295  1 0.04356622
+#' # p_v 4.198098  1 0.04046935
 #' }
 #'
 #' ### test all random effects at once
@@ -706,10 +706,10 @@
 #' #      chi2_LR df    p_value
 #' # p_v 20.10444  9 0.01727868
 #' #  ======== Bootstrap: ========
-#' # Raw simulated p-value: 0.038
+#' # Raw simulated p-value: 0.036
 #' # Bartlett-corrected LR test:
 #' #      chi2_LR df    p_value
-#' # p_v 17.99993  9 0.03517432
+#' # p_v 17.66125  9 0.03931335
 #' }
 #'
 #' ### test random effect of individual
@@ -723,7 +723,7 @@
 #'   test_ID
 #' # ======== Bootstrap: ========
 #' # Raw simulated p-value: 0.000999
-#' # 2*(logLik(best_fit_REML) - logLik(fit_no_ID)) ## LRT
+#' 2*(logLik(best_fit_REML) - logLik(fit_no_ID)) ## LRT
 #' # 10.46622
 #' }
 #'
@@ -737,7 +737,7 @@
 #'   test_loc
 #' # ======== Bootstrap: ========
 #' # Raw simulated p-value: 0.000999
-#' # 2*(logLik(best_fit_REML) - logLik(fit_no_loc)) ## LRT
+#' 2*(logLik(best_fit_REML) - logLik(fit_no_loc)) ## LRT
 #' # 14.59554
 #' }
 #'
