@@ -1,8 +1,8 @@
 #' Filtering and reformatting the data for statistical modeling
 #'
-#' This functions perform a series of data filtering steps. It also express predictors as
-#' differences between a capture event and the previous capture. Check the body of the function to
-#' see all steps in details.
+#' This functions reformat the data so as to express predictors as differences between a capture
+#' event and the previous capture. It can also perform a series of data filtering steps. Check the
+#' body of the function to see all steps in details.
 #'
 #' @inheritParams arguments
 #' @return a dataframe with the data ready for modeling
@@ -11,7 +11,7 @@
 #' @examples
 #' #see ?mallaRd
 #'
-prepare_data <- function(rawdata) {
+prepare_data <- function(rawdata, filtering = TRUE) {
 
   rawdata |>
     dplyr::mutate(individual_ID = .data$ring_number) |>
@@ -29,8 +29,10 @@ prepare_data <- function(rawdata) {
     dplyr::arrange(.data$individual_ID, .data$date) |>  ## sort by duckID and date
     dplyr::filter(!is.na(.data$individual_ID)) -> data_for_model_1 ## remove unknown ducks
 
-  data_for_model_1 |>
-    dplyr::filter(dplyr::n() > 1, .by = "individual_ID") -> data_for_model_2 ## remove duck only seen once
+  if (filtering) {
+    data_for_model_1 |>
+      dplyr::filter(dplyr::n() > 1, .by = "individual_ID") -> data_for_model_2 ## remove duck only seen once
+  } else {data_for_model_2 <- data_for_model_1}
 
   data_for_model_2 |>
     dplyr::mutate(
@@ -40,8 +42,8 @@ prepare_data <- function(rawdata) {
            delta_time = as.numeric(.data$date - .data$date_previous), ## compute time between event and next
            delta_year = .data$year - dplyr::lag(.data$year),  ## compute number of calendar year between two events
            delta_season = factor(dplyr::case_when(.data$delta_year < 1 ~ "same breeding season",
-                                                .data$delta_year < 2 ~ "one breeding season apart",
-                                                TRUE ~ "more than one breeding season apart")), ## categorial, 1 = same year, 2 = 2 or more years
+                                                  .data$delta_year < 2 ~ "one breeding season apart",
+                                                  TRUE ~ "more than one breeding season apart")), ## categorial, 1 = same year, 2 = 2 or more years
            location_lat_previous = dplyr::lag(.data$location_lat), ## retrieve latitude of previous event
            location_long_previous = dplyr::lag(.data$location_long),
            lat_relocation_previous = dplyr::lag(.data$release_site_lat),
@@ -52,7 +54,7 @@ prepare_data <- function(rawdata) {
                                                      lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
            relocation_distance_factor = factor(dplyr::case_when(.data$relocation_distance < 1000 ~ "less than 1K",
                                                                 .data$relocation_distance >= 1000 & .data$relocation_distance < 2000 ~ "1 - 2K",
-                                                         TRUE ~ ">= 2K")), ## categorial
+                                                                TRUE ~ ">= 2K")), ## categorial
            brood_size_previous = dplyr::lag(.data$brood_size),
            DNSW_previous = dplyr::lag(.data$DNSW),
            PSW1000_previous = dplyr::lag(.data$PSW1000),
@@ -65,26 +67,31 @@ prepare_data <- function(rawdata) {
            populationdensity2000_previous = dplyr::lag(.data$populationdensity2000),
            .by = "individual_ID") -> data_for_model_3
 
-  data_for_model_3 |> ## remove first occurrence per duck as no past info
-    dplyr::slice(-1, .by = "individual_ID") -> data_for_model_4
+  if (filtering) {
+    data_for_model_3 |> ## remove first occurrence per duck as no past info
+      dplyr::slice(-1, .by = "individual_ID") -> data_for_model_4
 
-  data_for_model_4 |>
-    dplyr::filter(.data$delta_season != "more than one breeding season apart") -> data_for_model_5 ## remove recapture event too far apart in time
+    data_for_model_4 |>
+      dplyr::filter(.data$delta_season != "more than one breeding season apart") -> data_for_model_5 ## remove recapture event too far apart in time
 
-  data_for_model_5 |>
-    tidyr::drop_na("individual_ID", "habitat_type_previous", "delta_season",
-            "delta_distance", "relocation_distance",
-            "location_lat_previous", "location_long_previous",
-            "location_long", "location_lat", "location_ID",
-            "brood_size", "brood_size_previous",
-            "DNSW", "DNSW_previous",
-            tidyselect::starts_with("presence"),  tidyselect::starts_with("traffic"), tidyselect::starts_with("populationdensity")) -> data_for_model_6 ## remove rows with NAs
+    data_for_model_5 |> ## remove rows with NAs
+      tidyr::drop_na("individual_ID", "habitat_type_previous", "delta_season",
+                     "delta_distance", "relocation_distance",
+                     "location_lat_previous", "location_long_previous",
+                     "location_long", "location_lat", "location_ID",
+                     "brood_size", "brood_size_previous",
+                     "DNSW", "DNSW_previous",
+                     tidyselect::starts_with("presence"),
+                     tidyselect::starts_with("traffic"),
+                     tidyselect::starts_with("populationdensity")) -> data_for_model_6
+  } else {data_for_model_6 <- data_for_model_5 <- data_for_model_4 <- data_for_model_3}
 
   data_for_model_6 |>
     dplyr::mutate(return = .data$location_ID == .data$location_ID_previous,
                   PSW1000_previous_f = as.factor(.data$PSW1000_previous),
                   PSW2000_previous_f = as.factor(.data$PSW2000_previous)) |>   ## if distance is under 20m, we consider ducks to go back to same place
     dplyr::mutate(dplyr::across(c("brood_size_previous",
+                                  "delta_distance",
                                   "relocation_distance",
                                   "DNSW_previous",
                                   "trafficvolume500_previous", "trafficvolume1000_previous", "trafficvolume2000_previous",
@@ -100,8 +107,9 @@ prepare_data <- function(rawdata) {
                   "location_lat", "location_long",
                   "location_lat_previous", "location_long_previous",
                   "location_ID", "location_ID_previous",
-                  "delta_season",
+                  "delta_season", "delta_season_z",
                   "brood_size_previous", "brood_size_previous_z",
+                  "delta_distance",
                   "relocation_distance", "relocation_distance_z",
                   "DNSW_previous", "DNSW_previous_z",
                   "PSW1000_previous", "PSW2000_previous",

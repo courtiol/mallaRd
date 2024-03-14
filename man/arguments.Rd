@@ -12,6 +12,8 @@
 
 \item{data_model}{the dataframe containing the data used for model fitting}
 
+\item{filtering}{whether or not to apply filters on the data}
+
 \item{fit}{a fitted model}
 
 \item{fit_null}{a fitted model more simple than the other fit it is compared to}

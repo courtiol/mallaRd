@@ -4,18 +4,20 @@
 \alias{prepare_data}
 \title{Filtering and reformatting the data for statistical modeling}
 \usage{
-prepare_data(rawdata)
+prepare_data(rawdata, filtering = TRUE)
 }
 \arguments{
 \item{rawdata}{the data frame containing the raw data}
+
+\item{filtering}{whether or not to apply filters on the data}
 }
 \value{
 a dataframe with the data ready for modeling
 }
 \description{
-This functions perform a series of data filtering steps. It also express predictors as
-differences between a capture event and the previous capture. Check the body of the function to
-see all steps in details.
+This functions reformat the data so as to express predictors as differences between a capture
+event and the previous capture. It can also perform a series of data filtering steps. Check the
+body of the function to see all steps in details.
 }
 \examples{
 #see ?mallaRd

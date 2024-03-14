@@ -29,6 +29,21 @@ NULL
 #'
 NULL
 
+#' The cleaned dataset of all breeding events for identified birds
+#'
+#' This dataset contains the raw data after reformatting the variables and after discarding the unknown birds.
+#' It derives from `data_all` as shown in `?mallaRd`.
+#'
+#' @name data_all_known
+#' @docType data
+#' @format a `tibble`
+#' @references this study
+#' @keywords datasets
+#' @seealso [data_raw], [data_model]
+#' @examples
+#' data_all_known
+#'
+NULL
 
 #' The dataset used for fitting the models
 #'

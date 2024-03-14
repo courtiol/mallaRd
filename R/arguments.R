@@ -13,6 +13,7 @@
 #' @param boot.repl the number of bootstrap replicates
 #' @param data the dataframe containing the data used by the function
 #' @param data_model the dataframe containing the data used for model fitting
+#' @param filtering whether or not to apply filters on the data
 #' @param fit a fitted model
 #' @param fit_null a fitted model more simple than the other fit it is compared to
 #' @param formulas the dataframe of formulas created with `prepare_formulas()`
