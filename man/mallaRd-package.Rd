@@ -54,17 +54,21 @@ data_raw |>
 ## for developer only: save the created data into the package
 # usethis::use_data(data_all, overwrite = TRUE)
 
+data_all_known <- prepare_data(data_all, filtering = FALSE)
+
+## for developer only: save the created data into the package
+# usethis::use_data(data_all_known, overwrite = TRUE)
 
 # Introduction-----------------------------------------------------------------------------------
 
 ## Summary statistics for the full dataset
 
 ### breeding events from identified (ringed) ducks
-sum(!is.na(data_all$ring_number))
+nrow(data_all_known)
 # [1] 1199
 
 ### total number of identified (ringed) ducks
-howmany(data_all$ring_number)
+howmany(data_all_known$individual_ID)
 # [1] 795
 
 ### total number of years
@@ -85,11 +89,11 @@ nrow(data_all)
 # [1] 1634
 
 ### breeding events from identified (ringed) ducks
-sum(!is.na(data_all$ring_number))
+nrow(data_all_known)
 # [1] 1199
 
 ### total number of identified (ringed) ducks
-howmany(data_all$ring_number)
+howmany(data_all_known$individual_ID)
 # [1] 795
 
 ### pct of breeding events for which floor level known
@@ -143,7 +147,7 @@ howmany(data_model$individual_ID)
 ### correlation between quantitative predictors of different type
 cor_matrix <- cor(data_model[,
   c("brood_size_previous_z",
-    "relocation_distance_z",
+    "relocation_distance_previous_z",
     "trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z",
     "populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z")])
 diag(cor_matrix) <- NA
@@ -343,13 +347,12 @@ howmany(data_all$ring_number)
 ## descriptive statistics
 
 ### total number of identified (ringed) ducks
-howmany(data_all$ring_number)
+howmany(data_all_known$individual_ID)
 # [1] 795
 
 ### total number of ducks observed more than once
-data_all |>
-  filter(!is.na(.data$ring_number)) |>
-  summarise(n = n(), .by = "ring_number") -> captures_per_duck
+data_all_known |>
+  summarise(n = n(), .by = "individual_ID") -> captures_per_duck
 
 captures_per_duck |>
   filter(.data$n > 1) |>
@@ -359,7 +362,7 @@ reoccuring_ducks
 # [1] 228
 
 ## percentage of ducks captured more than once
-100*reoccuring_ducks/howmany(data_all$ring_number)
+100*reoccuring_ducks/howmany(data_all_known$individual_ID)
 # [1] 28.67925
 
 ## range of number of captures
@@ -374,12 +377,11 @@ sd(captures_per_duck$n)
 
 ## percentage of ducks observed multiple times that used the same site more than once
 ## note: also used in abstract
-data_all |>
-  filter(!is.na(.data$ring_number)) |>
-  mutate(n_obs = n(), .by = "ring_number") |>
+data_all_known |>
+  mutate(n_obs = n(), .by = "individual_ID") |>
   filter(.data$n_obs > 1, !is.na(.data$location_ID)) |>
-  count(.data$location_ID, .data$ring_number) |>
-  summarise(reuse = any(.data$n > 2), .by = "ring_number") |>
+  count(.data$location_ID, .data$individual_ID) |>
+  summarise(reuse = any(.data$n > 2), .by = "individual_ID") |>
   count(.data$reuse) |>
   mutate(pct = 100*.data$n/sum(.data$n))
 # # A tibble: 2 × 3
@@ -389,22 +391,23 @@ data_all |>
 # 2 TRUE     52  22.8
 
 ## number of breeding sites used by known ducks
-howmany(data_all$location_ID[!is.na(data_all$ring_number)])
+howmany(data_all_known$location_ID)
 # 863
 
 ## number of breeding sites used by more than one known ducks
-data_all |>
-  filter(!is.na(.data$ring_number), !is.na(.data$location_ID)) |>
+data_all_known |>
+  filter(!is.na(.data$location_ID)) |>
   mutate(n_usage_breedingsite = n(), .by = "location_ID") |>
   filter(.data$n_usage_breedingsite > 1) |>
-  summarise(n_ducks = howmany(ring_number), .by = "location_ID") -> reocuring_breeding_site
+  summarise(n_ducks = howmany(individual_ID), .by = "location_ID") -> reocuring_breeding_site
 
 ### number of breeding sites used more than once
 howmany(reocuring_breeding_site$location_ID)
 # [1] 153
 
 ### proportion of breeding sites used more than once
-howmany(reocuring_breeding_site$location_ID)/howmany(data_all$location_ID[!is.na(data_all$ring_number)])
+howmany(reocuring_breeding_site$location_ID)/howmany(data_all_known$location_ID)
+# [1] 0.1772885
 
 ### number of breeding sites used by more than one duck
 reocuring_breeding_site |>
@@ -418,11 +421,11 @@ reocuring_breeding_site |>
 ## stats for fig 3
 
 ### breeding events from identified (ringed) ducks
-sum(!is.na(data_all$ring_number) & !is.na(data_all$location_ID))
+sum(!is.na(data_all_known$location_ID))
 # [1] 1194
 
-### total number of identified (ringed) ducks
-howmany(data_all$ring_number[!is.na(data_all$location_ID)])
+### total number of identified (ringed) ducks breeding at known locations
+howmany(data_all_known$individual_ID[!is.na(data_all_known$location_ID)])
 # [1] 794
 
 ### breeding events for recaptured individuals
@@ -452,7 +455,7 @@ fitting_results |>
   pull(.data$formula) -> best_formula
 best_formula
 # [1] "return~habitat_type_previous+PSW1000_previous+trafficvolume2000_previous_z+
-# populationdensity500_previous_z+brood_size_previous_z+delta_season+relocation_distance_z+
+# populationdensity500_previous_z+brood_size_previous_z+delta_season+relocation_distance_previous_z+
 # (1|individual_ID)+(1|location_ID)+1"
 
 ### alternative proxies retained among best models
@@ -494,7 +497,7 @@ best_fit <- fitme(as.formula(best_formula),
 best_fit
 # formula: return ~ habitat_type_previous + PSW1000_previous + trafficvolume2000_previous_z +
 #     populationdensity500_previous_z + brood_size_previous_z +
-#     delta_season + relocation_distance_z + (1 | individual_ID) +
+#     delta_season + relocation_distance_previous_z + (1 | individual_ID) +
 #     (1 | location_ID) + 1
 # Estimation of fixed effects by h-likelihood approximation.
 # Estimation of lambda by 'outer' ML, maximizing logL.
@@ -510,7 +513,7 @@ best_fit
 # populationdensity500_previous_z   -0.42710   0.2209 -1.93375
 # brood_size_previous_z              0.11891   0.1767  0.67291
 # delta_seasonsame breeding season   0.78563   0.4459  1.76201
-# relocation_distance_z             -0.31289   0.1871 -1.67239
+# relocation_distance_previous_z    -0.31289   0.1871 -1.67239
 #  --------------- Random effects ---------------
 # Family: gaussian( link = identity )
 #            --- Variance parameters ('lambda'):
@@ -543,7 +546,7 @@ if (doboot) {
 # p_v 49.28926 11 8.397054e-07
 }
 
-### test all fixed effects
+### test all fixed effects at once
 ## NOTE: this takes ca. 60 sec using 100 CPUs
 ## turn doboot to TRUE to run and do adjust ncpus to your system
 doboot <- FALSE
@@ -558,6 +561,21 @@ if (doboot) {
 # Bartlett-corrected LR test:
 #      chi2_LR df    p_value
 # p_v 17.66125  9 0.03931335
+}
+
+### test all random effects at once
+## NOTE: this takes ca. 60 sec using 100 CPUs
+## turn doboot to TRUE to run and do adjust ncpus to your system
+doboot <- FALSE
+if (doboot) {
+  best_fit_REML <- update(best_fit, method = "PQL")
+  fit_no_random <- update(best_fit, . ~ . - (1|individual_ID) - (1|location_ID), method = "PQL")
+  test_random <- compute_LRT(best_fit_REML, fit_no_random, ncpus = 100)
+  test_random
+#  ======== Bootstrap: ========
+# Raw simulated p-value: 0.000999
+2*(logLik(best_fit_REML) - logLik(fit_no_random)) ## LRT
+# 27.07088
 }
 
 ### test of habitat type
@@ -594,23 +612,6 @@ if (doboot) {
 # p_v 0.001049238  1 0.9741595
 }
 
-### test of human related disturbance as a whole
-## NOTE: this takes ca. 60 sec using 100 CPUs
-## turn doboot to TRUE to run and do adjust ncpus to your system
-doboot <- FALSE
-if (doboot) {
-  fit_no_HD <- update(best_fit, . ~ . - trafficvolume2000_previous_z - populationdensity500_previous_z)
-  test_HD <- compute_LRT(best_fit, fit_no_HD, ncpus = 100)
-  test_HD
-#      chi2_LR df    p_value
-# p_v 8.768916  2 0.01246964
-#  ======== Bootstrap: ========
-# Raw simulated p-value: 0.02
-# Bartlett-corrected LR test:
-#      chi2_LR df    p_value
-# p_v 7.792871  2 0.02031419
-}
-
 ### test of traffic volume
 ## NOTE: this takes ca. 60 sec using 100 CPUs
 ## turn doboot to TRUE to run and do adjust ncpus to your system
@@ -644,6 +645,33 @@ if (doboot) {
 #      chi2_LR df    p_value
 # p_v 4.608996  1 0.03180465
 }
+
+### describing effect of population density
+range(data_all$populationdensity500, na.rm = TRUE)
+# 0.0000 295.3047
+mean(data_all$populationdensity500, na.rm = TRUE)
+# 106.7098
+sd(data_all$populationdensity500, na.rm = TRUE)
+# 62.53258
+
+range(data_model$populationdensity500_previous, na.rm = TRUE)
+# 9.053046 276.798559
+mean(data_model$populationdensity500_previous, na.rm = TRUE)
+# 109.055
+sd(data_model$populationdensity500_previous, na.rm = TRUE)
+# 58.08383
+
+beta_popdens_z <- spaMM::fixef(best_fit)["populationdensity500_previous_z"]
+OR_popdens_z <- exp(beta_popdens_z) ## odds ratio
+OR_popdens_z
+# 0.6524002
+SE_popdens_z <- sqrt(vcov(best_fit)["populationdensity500_previous_z", "populationdensity500_previous_z"])
+exp(qnorm(0.025, mean = beta_popdens_z, sd = SE_popdens_z))
+# 0.4231685
+exp(qnorm(0.975, mean = beta_popdens_z, sd = SE_popdens_z))
+# 1.005807
+attr(data_model$populationdensity500_previous_z, "sd")
+# 58.08383
 
 ### test of previous breeding success
 ## NOTE: this takes ca. 60 sec using 100 CPUs
@@ -684,7 +712,7 @@ if (doboot) {
 ## turn doboot to TRUE to run and do adjust ncpus to your system
 doboot <- FALSE
 if (doboot) {
-  fit_no_relocdist <- update(best_fit, . ~ . - relocation_distance_z)
+  fit_no_relocdist <- update(best_fit, . ~ . - relocation_distance_previous_z)
   test_relocdist <- compute_LRT(best_fit, fit_no_relocdist, ncpus = 100)
   test_relocdist
 #      chi2_LR df    p_value
@@ -696,22 +724,34 @@ if (doboot) {
 # p_v 4.198098  1 0.04046935
 }
 
-### test all random effects at once
-## NOTE: this takes ca. 60 sec using 100 CPUs
-## turn doboot to TRUE to run and do adjust ncpus to your system
-doboot <- FALSE
-if (doboot) {
-  fit_no_random <- update(best_fit, . ~ . - (1|individual_ID) + (1|location_ID))
-  test_random <- compute_LRT(best_fit, fit_no_fix, ncpus = 100)
-  test_random
-#      chi2_LR df    p_value
-# p_v 20.10444  9 0.01727868
-#  ======== Bootstrap: ========
-# Raw simulated p-value: 0.036
-# Bartlett-corrected LR test:
-#      chi2_LR df    p_value
-# p_v 17.66125  9 0.03931335
-}
+### describing effect of relocation distance
+sum(!is.na(data_all_known$relocation_distance))
+# 400
+range(data_all_known$relocation_distance, na.rm = TRUE)
+# [1] 82.12002 30905.78841
+mean(data_all_known$relocation_distance, na.rm = TRUE)
+# [1] 2168.163
+sd(data_all_known$relocation_distance, na.rm = TRUE)
+# [1] 3238.424
+
+range(data_model$populationdensity500_previous, na.rm = TRUE)
+# 9.053046 276.798559
+mean(data_model$populationdensity500_previous, na.rm = TRUE)
+# 109.055
+sd(data_model$populationdensity500_previous, na.rm = TRUE)
+# 58.08383
+
+beta_popdens_z <- spaMM::fixef(best_fit)["populationdensity500_previous_z"]
+OR_popdens_z <- exp(beta_popdens_z) ## odds ratio
+OR_popdens_z
+# 0.6524002
+SE_popdens_z <- sqrt(vcov(best_fit)["populationdensity500_previous_z", "populationdensity500_previous_z"])
+exp(qnorm(0.025, mean = beta_popdens_z, sd = SE_popdens_z))
+# 0.4231685
+exp(qnorm(0.975, mean = beta_popdens_z, sd = SE_popdens_z))
+# 1.005807
+attr(data_model$populationdensity500_previous_z, "sd")
+# 58.08383
 
 ### test random effect of individual
 ## NOTE: this takes ca. 60 sec using 100 CPUs

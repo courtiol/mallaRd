@@ -48,13 +48,13 @@ prepare_data <- function(rawdata, filtering = TRUE) {
            location_long_previous = dplyr::lag(.data$location_long),
            lat_relocation_previous = dplyr::lag(.data$release_site_lat),
            long_relocation_previous = dplyr::lag(.data$release_site_long),
-           delta_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long, ## delta distance
-                                                lat2 = .data$location_lat_previous, long2 = .data$location_long_previous),
-           relocation_distance = distance2points_vec(lat1 = .data$location_lat_previous, long1 = .data$location_long_previous,
-                                                     lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
-           relocation_distance_factor = factor(dplyr::case_when(.data$relocation_distance < 1000 ~ "less than 1K",
-                                                                .data$relocation_distance >= 1000 & .data$relocation_distance < 2000 ~ "1 - 2K",
-                                                                TRUE ~ ">= 2K")), ## categorial
+           relocation_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long, ## delta distance
+                                                     lat2 = .data$location_lat_previous, long2 = .data$location_long_previous),
+           relocation_distance_previous = distance2points_vec(lat1 = .data$location_lat_previous, long1 = .data$location_long_previous,
+                                                              lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
+           relocation_distance_previous_factor = factor(dplyr::case_when(.data$relocation_distance_previous < 1000 ~ "less than 1K",
+                                                                         .data$relocation_distance_previous >= 1000 & .data$relocation_distance_previous < 2000 ~ "1 - 2K",
+                                                                         TRUE ~ ">= 2K")), ## categorial
            brood_size_previous = dplyr::lag(.data$brood_size),
            DNSW_previous = dplyr::lag(.data$DNSW),
            PSW1000_previous = dplyr::lag(.data$PSW1000),
@@ -76,7 +76,7 @@ prepare_data <- function(rawdata, filtering = TRUE) {
 
     data_for_model_5 |> ## remove rows with NAs
       tidyr::drop_na("individual_ID", "habitat_type_previous", "delta_season",
-                     "delta_distance", "relocation_distance",
+                     "relocation_distance", "relocation_distance_previous",
                      "location_lat_previous", "location_long_previous",
                      "location_long", "location_lat", "location_ID",
                      "brood_size", "brood_size_previous",
@@ -91,8 +91,8 @@ prepare_data <- function(rawdata, filtering = TRUE) {
                   PSW1000_previous_f = as.factor(.data$PSW1000_previous),
                   PSW2000_previous_f = as.factor(.data$PSW2000_previous)) |>   ## if distance is under 20m, we consider ducks to go back to same place
     dplyr::mutate(dplyr::across(c("brood_size_previous",
-                                  "delta_distance",
                                   "relocation_distance",
+                                  "relocation_distance_previous",
                                   "DNSW_previous",
                                   "trafficvolume500_previous", "trafficvolume1000_previous", "trafficvolume2000_previous",
                                   "populationdensity500_previous", "populationdensity1000_previous", "populationdensity2000_previous"),
@@ -107,10 +107,10 @@ prepare_data <- function(rawdata, filtering = TRUE) {
                   "location_lat", "location_long",
                   "location_lat_previous", "location_long_previous",
                   "location_ID", "location_ID_previous",
-                  "delta_season", "delta_season_z",
+                  "delta_season",
                   "brood_size_previous", "brood_size_previous_z",
-                  "delta_distance",
                   "relocation_distance", "relocation_distance_z",
+                  "relocation_distance_previous", "relocation_distance_previous_z",
                   "DNSW_previous", "DNSW_previous_z",
                   "PSW1000_previous", "PSW2000_previous",
                   "trafficvolume500_previous", "trafficvolume500_previous_z",

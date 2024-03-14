@@ -250,7 +250,7 @@ figure3 <- function(data, data_model) {
 #' @export
 #'
 #' @examples
-#' subfigure4(data_model, best_fit, "relocation_distance_z", "Relocation distance")
+#' subfigure4(data_model, best_fit, "relocation_distance_previous_z", "Relocation distance")
 #'
 subfigure4 <- function(data_model, fit, predictor, xlab = "") {
   pred <- spaMM::pdep_effects(fit, predictor, length.out = 100)

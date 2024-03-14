@@ -19,6 +19,6 @@ subfigure4(data_model, fit, predictor, xlab = "")
 Build components of figure 4
 }
 \examples{
-subfigure4(data_model, best_fit, "relocation_distance_z", "Relocation distance")
+subfigure4(data_model, best_fit, "relocation_distance_previous_z", "Relocation distance")
 
 }

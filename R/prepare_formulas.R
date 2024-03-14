@@ -22,7 +22,7 @@ prepare_formulas <- function() {
                                                     "populationdensity2000_previous_z"),
                              brood_size = c("brood_size_previous_z"),
                              breeding_season = c("delta_season"),
-                             relocation_distance = c("relocation_distance_z"),
+                             relocation_distance = c("relocation_distance_previous_z"),
                              random = c("(1 | individual_ID) + (1 | location_ID)"),
                              intercept = "1") ## important for processed formulas not ending with "+"
 
@@ -41,7 +41,7 @@ prepare_formulas <- function() {
                   population_density = grepl("density", x = .data$formula),
                   brood_size = grepl("brood", x = .data$formula),
                   breeding_season = grepl("season", x = .data$formula),
-                  relocation_distance = grepl("relocation", x = .data$formula)) |>
+                  relocation_distance_previous = grepl("relocation", x = .data$formula)) |>
     dplyr::mutate(nb_predictors_fix = sum(dplyr::c_across(-"formula"))) |>
     dplyr::mutate(individual_ID = grepl("individual_ID", x = .data$formula),
                   location_ID = grepl("location_ID", x = .data$formula)) |>

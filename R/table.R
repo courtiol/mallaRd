@@ -22,10 +22,10 @@ table_predictors <- function(data) {
                    location_long_previous = dplyr::lag(.data$location_long),
                    lat_relocation_previous = dplyr::lag(.data$release_site_lat),
                    long_relocation_previous = dplyr::lag(.data$release_site_long),
-                   delta_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long, ## delta distance
-                                                        lat2 = .data$location_lat_previous, long2 = .data$location_long_previous),
-                   relocation_distance = distance2points_vec(lat1 = .data$location_lat_previous, long1 = .data$location_long_previous,
-                                                             lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
+                   relocation_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long, ## delta distance
+                                                             lat2 = .data$location_lat_previous, long2 = .data$location_long_previous),
+                   relocation_distance_previous = distance2points_vec(lat1 = .data$location_lat_previous, long1 = .data$location_long_previous,
+                                                                      lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
                    .by = "ring_number") -> data
   } else {
     data$habitat_type   <- NULL
@@ -59,7 +59,7 @@ table_predictors <- function(data) {
                                      "delta_season_same",
                                      "delta_season_successive",
                                      "delta_season_distant",
-                                     "relocation_distance"),
+                                     "relocation_distance_previous"),
                                   \(x) data.frame(min = min(x, na.rm = TRUE),
                                                   max = max(x, na.rm = TRUE),
                                                   median = stats::median(x, na.rm = TRUE),
