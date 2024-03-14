@@ -18,5 +18,6 @@ Create table with summary statistics about the predictors
 \examples{
 # example code
 table_predictors(data_model)
+table_predictors(data_all_known)
 
 }

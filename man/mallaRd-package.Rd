@@ -724,34 +724,36 @@ if (doboot) {
 # p_v 4.198098  1 0.04046935
 }
 
-### describing effect of relocation distance
+### describing effect of relocation distance (for full data, not using previous)
 sum(!is.na(data_all_known$relocation_distance))
-# 400
+# [1] 1192
 range(data_all_known$relocation_distance, na.rm = TRUE)
-# [1] 82.12002 30905.78841
+# [1] 30.98786 37386.42255
 mean(data_all_known$relocation_distance, na.rm = TRUE)
-# [1] 2168.163
+# [1] 2420.263
 sd(data_all_known$relocation_distance, na.rm = TRUE)
-# [1] 3238.424
+# [1] 3738.127
 
-range(data_model$populationdensity500_previous, na.rm = TRUE)
-# 9.053046 276.798559
-mean(data_model$populationdensity500_previous, na.rm = TRUE)
-# 109.055
-sd(data_model$populationdensity500_previous, na.rm = TRUE)
-# 58.08383
+sum(!is.na(data_model$relocation_distance_previous))
+# [1] 301
+range(data_model$relocation_distance_previous)
+# [1] 82.12002 30905.78841
+mean(data_model$relocation_distance_previous)
+# [1] 2172.022
+sd(data_model$relocation_distance_previous)
+# [1] 3299.925
 
-beta_popdens_z <- spaMM::fixef(best_fit)["populationdensity500_previous_z"]
-OR_popdens_z <- exp(beta_popdens_z) ## odds ratio
-OR_popdens_z
-# 0.6524002
-SE_popdens_z <- sqrt(vcov(best_fit)["populationdensity500_previous_z", "populationdensity500_previous_z"])
-exp(qnorm(0.025, mean = beta_popdens_z, sd = SE_popdens_z))
-# 0.4231685
-exp(qnorm(0.975, mean = beta_popdens_z, sd = SE_popdens_z))
-# 1.005807
-attr(data_model$populationdensity500_previous_z, "sd")
-# 58.08383
+beta_reloc_z <- spaMM::fixef(best_fit)["relocation_distance_previous_z"]
+OR_reloc_z <- exp(beta_reloc_z) ## odds ratio
+OR_reloc_z
+# 0.7313277
+SE_reloc_z <- sqrt(vcov(best_fit)["relocation_distance_previous_z", "relocation_distance_previous_z"])
+exp(qnorm(0.025, mean = beta_reloc_z, sd = SE_reloc_z))
+# [1] 0.506825
+exp(qnorm(0.975, mean = beta_reloc_z, sd = SE_reloc_z))
+# [1] 1.055276
+attr(data_model$relocation_distance_previous_z, "sd")
+# [1] 3299.925
 
 ### test random effect of individual
 ## NOTE: this takes ca. 60 sec using 100 CPUs

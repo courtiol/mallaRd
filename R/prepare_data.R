@@ -27,14 +27,14 @@ prepare_data <- function(rawdata, filtering = TRUE) {
                   "populationdensity500", "populationdensity1000", "populationdensity2000") |>
     dplyr::mutate(year = as.numeric(.data$year)) |>
     dplyr::arrange(.data$individual_ID, .data$date) |>  ## sort by duckID and date
-    dplyr::filter(!is.na(.data$individual_ID)) -> data_for_model_1 ## remove unknown ducks
+    dplyr::filter(!is.na(.data$individual_ID)) -> data_formated_1 ## remove unknown ducks
 
   if (filtering) {
-    data_for_model_1 |>
-      dplyr::filter(dplyr::n() > 1, .by = "individual_ID") -> data_for_model_2 ## remove duck only seen once
-  } else {data_for_model_2 <- data_for_model_1}
+    data_formated_1 |>
+      dplyr::filter(dplyr::n() > 1, .by = "individual_ID") -> data_formated_2 ## remove duck only seen once
+  } else {data_formated_2 <- data_formated_1}
 
-  data_for_model_2 |>
+  data_formated_2 |>
     dplyr::mutate(
            habitat_type_previous = dplyr::lag(.data$habitat_type, n = 1),
            location_ID_previous = dplyr::lag(.data$location_ID, n = 1),
@@ -46,12 +46,12 @@ prepare_data <- function(rawdata, filtering = TRUE) {
                                                   TRUE ~ "more than one breeding season apart")), ## categorial, 1 = same year, 2 = 2 or more years
            location_lat_previous = dplyr::lag(.data$location_lat), ## retrieve latitude of previous event
            location_long_previous = dplyr::lag(.data$location_long),
-           lat_relocation_previous = dplyr::lag(.data$release_site_lat),
-           long_relocation_previous = dplyr::lag(.data$release_site_long),
-           relocation_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long, ## delta distance
-                                                     lat2 = .data$location_lat_previous, long2 = .data$location_long_previous),
+           release_site_lat_previous = dplyr::lag(.data$release_site_lat),
+           release_site_long_previous = dplyr::lag(.data$release_site_long),
+           relocation_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long,
+                                                     lat2 = .data$release_site_lat, long2 = .data$release_site_long),
            relocation_distance_previous = distance2points_vec(lat1 = .data$location_lat_previous, long1 = .data$location_long_previous,
-                                                              lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
+                                                              lat2 = .data$release_site_lat_previous, long2 = .data$release_site_long_previous),
            relocation_distance_previous_factor = factor(dplyr::case_when(.data$relocation_distance_previous < 1000 ~ "less than 1K",
                                                                          .data$relocation_distance_previous >= 1000 & .data$relocation_distance_previous < 2000 ~ "1 - 2K",
                                                                          TRUE ~ ">= 2K")), ## categorial
@@ -65,28 +65,28 @@ prepare_data <- function(rawdata, filtering = TRUE) {
            populationdensity500_previous = dplyr::lag(.data$populationdensity500),
            populationdensity1000_previous = dplyr::lag(.data$populationdensity1000),
            populationdensity2000_previous = dplyr::lag(.data$populationdensity2000),
-           .by = "individual_ID") -> data_for_model_3
+           .by = "individual_ID") -> data_formated_3
 
   if (filtering) {
-    data_for_model_3 |> ## remove first occurrence per duck as no past info
-      dplyr::slice(-1, .by = "individual_ID") -> data_for_model_4
+    data_formated_3 |> ## remove first occurrence per duck as no past info
+      dplyr::slice(-1, .by = "individual_ID") -> data_formated_4
 
-    data_for_model_4 |>
-      dplyr::filter(.data$delta_season != "more than one breeding season apart") -> data_for_model_5 ## remove recapture event too far apart in time
+    data_formated_4 |>
+      dplyr::filter(.data$delta_season != "more than one breeding season apart") -> data_formated_5 ## remove recapture event too far apart in time
 
-    data_for_model_5 |> ## remove rows with NAs
+    data_formated_5 |> ## remove rows with NAs
       tidyr::drop_na("individual_ID", "habitat_type_previous", "delta_season",
-                     "relocation_distance", "relocation_distance_previous",
+                     "relocation_distance_previous",
                      "location_lat_previous", "location_long_previous",
                      "location_long", "location_lat", "location_ID",
                      "brood_size", "brood_size_previous",
                      "DNSW", "DNSW_previous",
                      tidyselect::starts_with("presence"),
                      tidyselect::starts_with("traffic"),
-                     tidyselect::starts_with("populationdensity")) -> data_for_model_6
-  } else {data_for_model_6 <- data_for_model_5 <- data_for_model_4 <- data_for_model_3}
+                     tidyselect::starts_with("populationdensity")) -> data_formated_6
+  } else {data_formated_6 <- data_formated_5 <- data_formated_4 <- data_formated_3}
 
-  data_for_model_6 |>
+  data_formated_6 |>
     dplyr::mutate(return = .data$location_ID == .data$location_ID_previous,
                   PSW1000_previous_f = as.factor(.data$PSW1000_previous),
                   PSW2000_previous_f = as.factor(.data$PSW2000_previous)) |>   ## if distance is under 20m, we consider ducks to go back to same place
@@ -105,6 +105,7 @@ prepare_data <- function(rawdata, filtering = TRUE) {
                   "date", "return",
                   "habitat_type", "habitat_type_previous",
                   "location_lat", "location_long",
+                  "release_site_lat", "release_site_long",
                   "location_lat_previous", "location_long_previous",
                   "location_ID", "location_ID_previous",
                   "delta_season",
@@ -118,7 +119,7 @@ prepare_data <- function(rawdata, filtering = TRUE) {
                   "trafficvolume2000_previous", "trafficvolume2000_previous_z",
                   "populationdensity500_previous", "populationdensity500_previous_z",
                   "populationdensity1000_previous", "populationdensity1000_previous_z",
-                  "populationdensity2000_previous", "populationdensity2000_previous_z") -> data_for_model
+                  "populationdensity2000_previous", "populationdensity2000_previous_z") -> data_formated
 
   # describe discarded data
   res <- tibble::tibble(description = c("raw data",
@@ -130,39 +131,39 @@ prepare_data <- function(rawdata, filtering = TRUE) {
                              "removed because of missing values for predictors",
                              "final number of rows"),
              breeding_events_removed = c(0,  ## initial number of rows
-                         nrow(rawdata) - nrow(data_for_model_1), ## number of rows removed because they correspond to unknown ducks
-                         nrow(data_for_model_1) - nrow(data_for_model_2), ## number of rows removed because they correspond to ducks only observed once
-                         nrow(data_for_model_2) - nrow(data_for_model_3), ## number of rows removed because of reshaping the data
-                         nrow(data_for_model_3) - nrow(data_for_model_4), ## number of rows removed because they correspond to first occurrence per duck that is recapture
-                         nrow(data_for_model_4) - nrow(data_for_model_5), ## number of rows removed because they correspond to recapture events more than 1 year apart
-                         nrow(data_for_model_5) - nrow(data_for_model_6), ## number of rows removed because of missing values for predictors
-                         nrow(data_for_model) ## final number of rows
+                         nrow(rawdata) - nrow(data_formated_1), ## number of rows removed because they correspond to unknown ducks
+                         nrow(data_formated_1) - nrow(data_formated_2), ## number of rows removed because they correspond to ducks only observed once
+                         nrow(data_formated_2) - nrow(data_formated_3), ## number of rows removed because of reshaping the data
+                         nrow(data_formated_3) - nrow(data_formated_4), ## number of rows removed because they correspond to first occurrence per duck that is recapture
+                         nrow(data_formated_4) - nrow(data_formated_5), ## number of rows removed because they correspond to recapture events more than 1 year apart
+                         nrow(data_formated_5) - nrow(data_formated_6), ## number of rows removed because of missing values for predictors
+                         nrow(data_formated) ## final number of rows
                       ),
              remaining_events = c(nrow(rawdata),
-                                  nrow(data_for_model_1),
-                                  nrow(data_for_model_2),
-                                  nrow(data_for_model_3),
-                                  nrow(data_for_model_4),
-                                  nrow(data_for_model_5),
-                                  nrow(data_for_model_6),
-                                  nrow(data_for_model)),
+                                  nrow(data_formated_1),
+                                  nrow(data_formated_2),
+                                  nrow(data_formated_3),
+                                  nrow(data_formated_4),
+                                  nrow(data_formated_5),
+                                  nrow(data_formated_6),
+                                  nrow(data_formated)),
              delta_events_pct = 100 * (.data$breeding_events_removed / nrow(rawdata)),
              ducks_removed = c(0,
-                               length(unique(stats::na.omit(rawdata$ring_number))) - length(unique(stats::na.omit(data_for_model_1$individual_ID))),
-                               length(unique(stats::na.omit(data_for_model_1$individual_ID))) - length(unique(stats::na.omit(data_for_model_2$individual_ID))),
-                               length(unique(stats::na.omit(data_for_model_2$individual_ID))) - length(unique(stats::na.omit(data_for_model_3$individual_ID))),
-                               length(unique(stats::na.omit(data_for_model_3$individual_ID))) - length(unique(stats::na.omit(data_for_model_4$individual_ID))),
-                               length(unique(stats::na.omit(data_for_model_4$individual_ID))) - length(unique(stats::na.omit(data_for_model_5$individual_ID))),
-                               length(unique(stats::na.omit(data_for_model_5$individual_ID))) - length(unique(stats::na.omit(data_for_model_6$individual_ID))),
-                               length(unique(stats::na.omit(data_for_model_6$individual_ID))) - length(unique(stats::na.omit(data_for_model$individual_ID)))),
+                               length(unique(stats::na.omit(rawdata$ring_number))) - length(unique(stats::na.omit(data_formated_1$individual_ID))),
+                               length(unique(stats::na.omit(data_formated_1$individual_ID))) - length(unique(stats::na.omit(data_formated_2$individual_ID))),
+                               length(unique(stats::na.omit(data_formated_2$individual_ID))) - length(unique(stats::na.omit(data_formated_3$individual_ID))),
+                               length(unique(stats::na.omit(data_formated_3$individual_ID))) - length(unique(stats::na.omit(data_formated_4$individual_ID))),
+                               length(unique(stats::na.omit(data_formated_4$individual_ID))) - length(unique(stats::na.omit(data_formated_5$individual_ID))),
+                               length(unique(stats::na.omit(data_formated_5$individual_ID))) - length(unique(stats::na.omit(data_formated_6$individual_ID))),
+                               length(unique(stats::na.omit(data_formated_6$individual_ID))) - length(unique(stats::na.omit(data_formated$individual_ID)))),
              remaining_ducks = c(length(unique(stats::na.omit(rawdata$ring_number))),
-                                 length(unique(stats::na.omit(data_for_model_1$individual_ID))),
-                                 length(unique(stats::na.omit(data_for_model_2$individual_ID))),
-                                 length(unique(stats::na.omit(data_for_model_3$individual_ID))),
-                                 length(unique(stats::na.omit(data_for_model_4$individual_ID))),
-                                 length(unique(stats::na.omit(data_for_model_5$individual_ID))),
-                                 length(unique(stats::na.omit(data_for_model_6$individual_ID))),
-                                 length(unique(stats::na.omit(data_for_model$individual_ID)))),
+                                 length(unique(stats::na.omit(data_formated_1$individual_ID))),
+                                 length(unique(stats::na.omit(data_formated_2$individual_ID))),
+                                 length(unique(stats::na.omit(data_formated_3$individual_ID))),
+                                 length(unique(stats::na.omit(data_formated_4$individual_ID))),
+                                 length(unique(stats::na.omit(data_formated_5$individual_ID))),
+                                 length(unique(stats::na.omit(data_formated_6$individual_ID))),
+                                 length(unique(stats::na.omit(data_formated$individual_ID)))),
             delta_duck_pct = 100 * (.data$ducks_removed / length(unique(stats::na.omit(rawdata$ring_number))))
          )
 
@@ -170,7 +171,7 @@ prepare_data <- function(rawdata, filtering = TRUE) {
   print(res)
   cat("\n")
 
-  data_for_model
+  data_formated
 }
 
 

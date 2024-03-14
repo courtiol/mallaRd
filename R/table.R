@@ -8,32 +8,17 @@
 #' @examples
 #' # example code
 #' table_predictors(data_model)
+#' table_predictors(data_all_known)
 #'
 table_predictors <- function(data) {
 
-  if (any(colnames(data) %in% "PSW1000")) {
-    ## if not data_model but data_all
-    data |>
-     dplyr::mutate(delta_year = .data$year - dplyr::lag(.data$year),  ## compute number of calendar year between two events
-                   delta_season = factor(dplyr::case_when(.data$delta_year < 1 ~ "same breeding season",
-                                                          .data$delta_year < 2 ~ "one breeding season apart",
-                                                          TRUE ~ "more than one breeding season apart")),
-                   location_lat_previous = dplyr::lag(.data$location_lat), ## retrieve latitude of previous event
-                   location_long_previous = dplyr::lag(.data$location_long),
-                   lat_relocation_previous = dplyr::lag(.data$release_site_lat),
-                   long_relocation_previous = dplyr::lag(.data$release_site_long),
-                   relocation_distance = distance2points_vec(lat1 = .data$location_lat, long1 = .data$location_long, ## delta distance
-                                                             lat2 = .data$location_lat_previous, long2 = .data$location_long_previous),
-                   relocation_distance_previous = distance2points_vec(lat1 = .data$location_lat_previous, long1 = .data$location_long_previous,
-                                                                      lat2 = .data$lat_relocation_previous, long2 = .data$long_relocation_previous),
-                   .by = "ring_number") -> data
-  } else {
-    data$habitat_type   <- NULL
-    data$location_ID    <- NULL
-    data$location_long  <- NULL
-    data$location_lat   <- NULL
-    colnames(data) <- gsub("_previous", "", colnames(data))
-  }
+  data$habitat_type  <- NULL
+  data$location_ID    <- NULL
+  data$location_long  <- NULL
+  data$location_lat   <- NULL
+  data$relocation_distance <- NULL
+  data$relocation_distance_z <- NULL
+  colnames(data) <- gsub("_previous", "", colnames(data))
 
   data |>
     dplyr::mutate(habitat_balcony = as.numeric(.data$habitat_type == "balcony"),
@@ -59,7 +44,7 @@ table_predictors <- function(data) {
                                      "delta_season_same",
                                      "delta_season_successive",
                                      "delta_season_distant",
-                                     "relocation_distance_previous"),
+                                     "relocation_distance"),
                                   \(x) data.frame(min = min(x, na.rm = TRUE),
                                                   max = max(x, na.rm = TRUE),
                                                   median = stats::median(x, na.rm = TRUE),
