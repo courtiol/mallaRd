@@ -803,11 +803,36 @@
 #' # 14.59554
 #' }
 #'
+#' ## Comparing predictive power
+#'
+#' summarize_fit(best_fit, method = "PQL/L")
+#' # # A tibble: 8 × 6
+#' #   model                         mAIC  cAIC  TjursD delta_mAIC delta_cAIC
+#' #   <fct>                         <chr> <chr> <chr>  <chr>      <chr>
+#' # 1 full model                    379.  359.  0.496  0.00       0.00
+#' # 2 fixed effects + location ID   379.  365.  0.302  0.506      5.97
+#' # 3 random effects                381.  366.  0.484  2.10       7.25
+#' # 4 location ID                   383.  370.  0.269  3.63       10.6
+#' # 5 fixed effects + individual ID 383.  371.  0.261  3.94       11.7
+#' # 6 individual ID                 386.  374.  0.233  7.22       15.5
+#' # 7 fixed effects                 389.  389.  0.0927 10.3       30.3
+#' # 8 null model                    399.  399.  0.00   20.4       40.4
+#'
+#' summarize_fit(best_fit, method = "PQL")
+#' # # A tibble: 8 × 6
+#' #   model                         mAIC  cAIC  TjursD delta_mAIC delta_cAIC
+#' #   <fct>                         <chr> <chr> <chr>  <chr>      <chr>
+#' # 1 fixed effects + location ID   379.  363.  0.333  0.00       7.09
+#' # 2 random effects                381.  366.  0.506  2.42       9.79
+#' # 3 fixed effects + individual ID 382.  369.  0.291  3.69       13.0
+#' # 4 location ID                   382.  369.  0.272  3.78       13.1
+#' # 5 full model                    384.  356.  0.719  4.84       0.00
+#' # 6 individual ID                 386.  374.  0.237  7.39       17.9
+#' # 7 fixed effects                 389.  389.  0.0927 10.6       32.9
+#' # 8 null model                    399.  399.  0.00   20.7       43.0
+#'
 #'
 #' # Figures ---------------------------------------------------------------------------------------
-#'
-#' ## set resolution
-#' showtext::showtext_opts(dpi = 300)
 #'
 #' ## choose to save figures on the hard drive or not
 #' redraw <- FALSE ## turn to TRUE for saving
@@ -817,25 +842,37 @@
 #'   dir.create("figures")
 #' }
 #'
+#'
 #' ## figure 1
 #' figure1(data_all)
 #' if (redraw) {
-#'   ggsave("figures/fig1.pdf", width = 19, height = 12, units = "cm")
-#'   ggsave("figures/fig1.png", width = 19, height = 12, units = "cm")
+#'   showtext::showtext_opts(dpi = 300)
+#'   ggsave("figures/fig1.pdf", width = 19, height = 12, dpi = 300, units = "cm")
+#'   ggsave("figures/fig1.png", width = 19, height = 12, dpi = 300, units = "cm")
 #' }
 #'
 #' ## figure 2
 #' figure2(data_all)
 #' if (redraw) {
-#'   ggsave("figures/fig2.pdf", width = 19, height = 15, units = "cm")
-#'   ggsave("figures/fig2.png", width = 19, height = 15, units = "cm")
+#'   showtext::showtext_opts(dpi = 300)
+#'   ggsave("figures/fig2.pdf", width = 19, height = 15, dpi = 300, units = "cm")
+#'   ggsave("figures/fig2.png", width = 19, height = 15, dpi = 300, units = "cm")
 #' }
 #'
 #' ## figure 3
 #' figure3(data_all, data_model)
 #' if (redraw) {
-#'   ggsave("figures/fig3.pdf", width = 19, height = 9, units = "cm")
-#'   ggsave("figures/fig3.png", width = 19, height = 9, units = "cm")
+#'   showtext::showtext_opts(dpi = 300)
+#'   ggsave("figures/fig3.pdf", width = 19, height = 9, dpi = 300, units = "cm")
+#'   ggsave("figures/fig3.png", width = 19, height = 9, dpi = 300, units = "cm")
+#' }
+#'
+#' ## figure 4
+#' figure4(data_model, best_fit, re.form = NA)
+#' if (redraw) {
+#'   showtext::showtext_opts(dpi = 300)
+#'   ggsave("figures/fig4.pdf", width = 19, height = 9, dpi = 300, units = "cm")
+#'   ggsave("figures/fig4.png", width = 19, height = 9, dpi = 300, units = "cm")
 #' }
 #'
 #' # Tables ----------------------------------------------------------------------------------------

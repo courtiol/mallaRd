@@ -78,7 +78,7 @@ TjurD <- function(fit) {
 #' @examples
 #' summarize_fit(best_fit)
 #'
-summarize_fit <- function(best_fit) {
+summarize_fit <- function(best_fit, method = "PQL/L", pretty = TRUE) {
 
   extract_formula <- function(fit) {
     paste(as.character(stats::formula(fit))[c(2, 3)], collapse = " ~ ")
@@ -90,13 +90,14 @@ summarize_fit <- function(best_fit) {
                                                     "null_ID", "null_location",
                                                     "null"))
 
-  best_fit_fix_only     <- stats::update(best_fit, . ~ . - (1|individual_ID) - (1|location_ID))
-  best_fit_random_only  <- stats::update(best_fit, . ~ 1 + (1|individual_ID) + (1|location_ID))
-  best_fit_fix_ID       <- stats::update(best_fit, . ~ . - (1|location_ID))
-  best_fit_fix_location <- stats::update(best_fit, . ~ . - (1|individual_ID))
-  null_ID               <- stats::update(best_fit, . ~ 1 + ( 1|individual_ID))
-  null_location         <- stats::update(best_fit, . ~ 1 + (1|location_ID))
-  null                  <- stats::update(best_fit, . ~ 1)
+  best_fit              <- stats::update(best_fit, method = method)
+  best_fit_fix_only     <- stats::update(best_fit, . ~ . - (1|individual_ID) - (1|location_ID), method = method)
+  best_fit_random_only  <- stats::update(best_fit, . ~ 1 + (1|individual_ID) + (1|location_ID), method = method)
+  best_fit_fix_ID       <- stats::update(best_fit, . ~ . - (1|location_ID), method = method)
+  best_fit_fix_location <- stats::update(best_fit, . ~ . - (1|individual_ID), method = method)
+  null_ID               <- stats::update(best_fit, . ~ 1 + ( 1|individual_ID), method = method)
+  null_location         <- stats::update(best_fit, . ~ 1 + (1|location_ID), method = method)
+  null                  <- stats::update(best_fit, . ~ 1, method = method)
 
   summary_selected_fits$formula    <- sapply(summary_selected_fits$model, \(fit) extract_formula(get(fit)))
   summary_selected_fits$mAIC       <- sapply(summary_selected_fits$model, \(fit) stats::AIC(get(fit), verbose = FALSE, short.names = TRUE)["mAIC"])
@@ -106,23 +107,30 @@ summarize_fit <- function(best_fit) {
   summary_selected_fits$delta_cAIC <- summary_selected_fits$cAIC - min(summary_selected_fits$cAIC)
 
   summary_selected_fits$model <- dplyr::case_match(summary_selected_fits$model,
-                                                   "best_fit" ~ "best model",
-                                                   "best_fit_fix_only" ~ "fixed effects only",
-                                                   "best_fit_random_only" ~ "random effects only",
-                                                   "best_fit_fix_ID" ~ "fixed effects + random individual",
-                                                   "best_fit_fix_location" ~ "fixed effects + random location",
-                                                   "null_ID" ~ "individual only",
-                                                   "null_location" ~ "location only",
+                                                   "best_fit" ~ "full model",
+                                                   "best_fit_fix_only" ~ "fixed effects",
+                                                   "best_fit_random_only" ~ "random effects",
+                                                   "best_fit_fix_ID" ~ "fixed effects + individual ID",
+                                                   "best_fit_fix_location" ~ "fixed effects + location ID",
+                                                   "null_ID" ~ "individual ID",
+                                                   "null_location" ~ "location ID",
                                                    "null" ~ "null model")
 
-  summary_selected_fits$model <- factor(summary_selected_fits$model, levels = c("best model", "fixed effects only",
-                                                                                "random effects only", "fixed effects + random individual",
-                                                                                "fixed effects + random location", "individual only",
-                                                                                "location only", "null model"))
+  summary_selected_fits$model <- factor(summary_selected_fits$model, levels = c("full model", "fixed effects",
+                                                                                "random effects", "fixed effects + individual ID",
+                                                                                "fixed effects + location ID", "individual ID",
+                                                                                "location ID", "null model"))
 
   summary_selected_fits$group  <- factor(c("fixed+random", "fixed",
                                           "random", "fixed+random", "fixed+random",
                                           "random", "random", "null model"))
+
+  if (pretty) {
+    summary_selected_fits |>
+      dplyr::select(-"group", -"formula") |>
+      dplyr::arrange(.data$delta_mAIC) |>
+      dplyr::mutate(dplyr::across(dplyr::where(is.numeric), \(x) pretty(x))) -> summary_selected_fits
+  }
 
   summary_selected_fits
 }

@@ -4,6 +4,8 @@
 \alias{arguments}
 \title{Definition of the function arguments}
 \arguments{
+\item{...}{addition arguments for internal functions}
+
 \item{best_fit}{the fit of the model with the best predictive power}
 
 \item{boot.repl}{the number of bootstrap replicates}
@@ -20,6 +22,8 @@
 
 \item{fit_null}{a fitted model more simple than the other fit it is compared to}
 
+\item{fn}{a function to transform the value along the x-axis}
+
 \item{formulas}{the dataframe of formulas created with \code{prepare_formulas()}}
 
 \item{lat}{the latitude of a point}
@@ -34,9 +38,13 @@
 
 \item{long2}{the longitude of point 2}
 
+\item{method}{the fitting method ("PQL/L" or "PQL"), see \link[spaMM:method]{spaMM::method}}
+
 \item{ncpus}{the number of CPU cores to use for parallel processing (default = 2)}
 
 \item{predictor}{the name of the focal predictor}
+
+\item{pretty}{whether or not to format the table for nice display}
 
 \item{rawdata}{the data frame containing the raw data}
 

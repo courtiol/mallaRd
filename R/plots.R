@@ -110,7 +110,7 @@ figure1 <- function(data, ymax = c(0.15, 0.20, 0.01, 0.06, 0.025)) {
     theme1 +
     ggplot2::theme(axis.title.y = ggplot2::element_blank()) -> p5
 
-  cowplot::plot_grid(p1,
+  p <- cowplot::plot_grid(p1,
                      p2,
                      p3,
                      p4,
@@ -118,6 +118,7 @@ figure1 <- function(data, ymax = c(0.15, 0.20, 0.01, 0.06, 0.025)) {
                      labels = "AUTO",
                      nrow = 2,
                      hjust = -1)
+  print(p)
 
 }
 
@@ -192,7 +193,7 @@ figure2 <- function(data) {
     theme2 +
     ggplot2::scale_fill_manual(values = c("darkred", "darkgrey")) -> p2
 
-  cowplot::plot_grid(p1, p2, labels = "AUTO", nrow = 2)
+  print(cowplot::plot_grid(p1, p2, labels = "AUTO", nrow = 2))
 }
 
 
@@ -239,7 +240,7 @@ figure3 <- function(data, data_model) {
     ggplot2::scale_x_continuous(limits = c(-0.5, 12), breaks = seq(0, 12, 1)) +
     ggplot2::scale_y_continuous(limits = c(0, 120), breaks = seq(0, 120, 20)) -> p2
 
-  cowplot::plot_grid(p1, p2, labels = "AUTO", nrow = 1)
+  print(cowplot::plot_grid(p1, p2, labels = "AUTO", nrow = 1))
 }
 
 
@@ -250,28 +251,69 @@ figure3 <- function(data, data_model) {
 #' @export
 #'
 #' @examples
-#' subfigure4(data_model, best_fit, "relocation_distance_previous_z", "Relocation distance")
+#' subfigure4(data_model, fit = best_fit,
+#'            predictor = "relocation_distance_previous_z",
+#'            xlab = "Relocation distance (m)")
 #'
-subfigure4 <- function(data_model, fit, predictor, xlab = "") {
-  pred <- spaMM::pdep_effects(fit, predictor, length.out = 100)
+#' subfigure4(data_model, fit = best_fit,
+#'            predictor = "relocation_distance_previous_z",
+#'            xlab = "Relocation distance (km)",
+#'            fn = \(x) x/1000)
+#'
+subfigure4 <- function(data_model, fit, predictor,  fn = identity, xlab = "", ...) {
+  pred <- spaMM::pdep_effects(fit, predictor, length.out = 100, ...)
+  pred$focal_var <- fn(pred$focal_var * attr(data_model[[predictor]], "sd") + attr(data_model[[predictor]], "mean"))
 
-  predictor_mean <- mean(data_model[[predictor]])
-  pred_at_mean <- spaMM::plot_effects(fit, predictor, focal_values = predictor_mean)[["pointp"]]
-  ## TODO backtransform to remove z-score
+  predictor_mean <- fn(attr(data_model[[predictor]], "mean"))
+  pred_at_mean <- spaMM::pdep_effects(fit, predictor, focal_values = 0, ...)[["pointp"]]
 
   ggplot2::ggplot(pred) +
-  ggplot2::aes(x = .data$focal_var, y = .data$pointp) +
-  ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$low, ymax = .data$up), fill = "lightgrey") +
-  ggplot2::geom_line(colour = "darkred", size = 1.3) +
-  ggplot2::geom_segment(x = -1e6, y = pred_at_mean, xend = predictor_mean, yend = pred_at_mean, linetype = "dashed") +
-  ggplot2::geom_segment(x = predictor_mean, y = pred_at_mean, xend = predictor_mean, yend = 0, linetype = "dashed") +
-  theme2 +
-  ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0), "cm")) +
-  ggplot2::scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.1), name = "\n P(return)", expand = c(0, 0)) +
-  ggplot2::scale_x_continuous(name = xlab)
+    ggplot2::aes(x = .data$focal_var, y = .data$pointp) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$low, ymax = .data$up), fill = "lightgrey") +
+    ggplot2::geom_line(colour = "darkred", size = 1.3) +
+    ggplot2::geom_segment(x = -1e6, y = pred_at_mean, xend = predictor_mean, yend = pred_at_mean, linetype = "dashed") +
+    ggplot2::geom_segment(x = predictor_mean, y = pred_at_mean, xend = predictor_mean, yend = 0, linetype = "dashed") +
+    theme1 +
+    ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0), "cm")) +
+    ggplot2::scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.1), name = "\n P(return)", expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(name = xlab)
+
 
 }
 
+
+#' Build figure 4
+#'
+#' @inheritParams arguments
+#'
+#' @export
+#'
+#' @examples
+#' figure4(data_model, best_fit)
+#'
+figure4 <- function(data_model, fit, ...) {
+  p1 <- subfigure4(data_model, fit = best_fit,
+                   predictor = "populationdensity500_previous_z",
+                   xlab = "Human pop density (/ha)", ...)
+  p2 <- subfigure4(data_model, fit = best_fit,
+                   predictor = "relocation_distance_previous_z",
+                   xlab = "Relocation distance (km)",
+                   fn = \(x) x/1000, ...)
+
+  pred <- spaMM::pdep_effects(fit, "delta_season", ...)
+
+  p3 <- ggplot2::ggplot(pred) +
+    ggplot2::aes(x = .data$focal_var, y = .data$pointp) +
+    ggplot2::geom_col(colour = "darkred", fill = NA, size = 1.3) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$low, ymax = .data$up), colour = "darkgrey", width = 0.1) +
+    theme1 +
+    ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0), "cm")) +
+    ggplot2::scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.1), name = "\n P(return)", expand = c(0, 0)) +
+    ggplot2::scale_x_discrete(name = "Breeding season", labels = c("successive", "same"))
+
+  p <- cowplot::plot_grid(p1, p2, p3, labels = "AUTO", nrow = 1)
+  print(p)
+}
 
 #' Build figure 5
 #'
@@ -284,7 +326,7 @@ subfigure4 <- function(data_model, fit, predictor, xlab = "") {
 #'
 figure5 <- function(best_fit) {
 
-  summary_selected_fits <- summarize_fit(best_fit)
+  summary_selected_fits <- summarize_fit(best_fit, pretty = FALSE)
 
   summary_selected_fits |>
     ggplot2::ggplot(ggplot2::aes(.data$model, .data$delta_cAIC, fill = .data$group)) +

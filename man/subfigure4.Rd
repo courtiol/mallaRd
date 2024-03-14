@@ -4,7 +4,7 @@
 \alias{subfigure4}
 \title{Build components of figure 4}
 \usage{
-subfigure4(data_model, fit, predictor, xlab = "")
+subfigure4(data_model, fit, predictor, fn = identity, xlab = "", ...)
 }
 \arguments{
 \item{data_model}{the dataframe containing the data used for model fitting}
@@ -13,12 +13,23 @@ subfigure4(data_model, fit, predictor, xlab = "")
 
 \item{predictor}{the name of the focal predictor}
 
+\item{fn}{a function to transform the value along the x-axis}
+
 \item{xlab}{the name for the x-axis}
+
+\item{...}{addition arguments for internal functions}
 }
 \description{
 Build components of figure 4
 }
 \examples{
-subfigure4(data_model, best_fit, "relocation_distance_previous_z", "Relocation distance")
+subfigure4(data_model, fit = best_fit,
+           predictor = "relocation_distance_previous_z",
+           xlab = "Relocation distance (m)")
+
+subfigure4(data_model, fit = best_fit,
+           predictor = "relocation_distance_previous_z",
+           xlab = "Relocation distance (km)",
+           fn = \(x) x/1000)
 
 }
