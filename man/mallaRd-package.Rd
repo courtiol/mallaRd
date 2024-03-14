@@ -109,16 +109,16 @@ sum(!is.na(data_all$floor_level))
 data_model <- prepare_data(data_all)
 # Information on data filtering
 # # A tibble: 8 × 7
-#   description                                             breeding_events_removed remaining_events delta_events_pct ducks_removed remaining_ducks delta_duck_pct
-#   <chr>                                                                     <dbl>            <int>            <dbl>         <dbl>           <int>          <dbl>
-# 1 raw data                                                                      0             1634            0                 0             795          0
-# 2 removed because unknown ducks                                               435             1199           26.6               0             795          0
-# 3 removed because only observed once                                          567              632           34.7             567             228         71.3
-# 4 removed because of reshaping the data                                         0              632            0                 0             228          0
-# 5 removed because first occurrence per duck not used                          228              404           14.0               0             228          0
-# 6 removed because recapture events more than 1 year apart                      91              313            5.57             42             186          5.28
-# 7 removed because of missing values for predictors                             12              301            0.734             6             180          0.755
-# 8 final number of rows                                                        301              301           18.4               0             180          0
+#   description                           breeding_events_removed remaining_events delta_events_pct ducks_removed remaining_ducks delta_duck_pct
+#   <chr>                                                   <dbl>            <int>            <dbl>         <dbl>           <int>          <dbl>
+# 1 raw data                                                    0             1634            0                 0             795          0
+# 2 removed because unknown ducks                             435             1199           26.6               0             795          0
+# 3 removed because only observed once                        567              632           34.7             567             228         71.3
+# 4 removed because of reshaping the data                       0              632            0                 0             228          0
+# 5 removed because first occurrence per duck not used        228              404           14.0               0             228          0
+# 6 removed because recapture events more than 1 year apart    91              313            5.57             42             186          5.28
+# 7 removed because of missing values for predictors           12              301            0.734             6             180          0.755
+# 8 final number of rows                                      301              301           18.4               0             180          0
 
 ## for developer only: save the created data into the package
 # usethis::use_data(data_model, overwrite = TRUE)
@@ -748,19 +748,34 @@ if (doboot) {
 ## set resolution
 showtext::showtext_opts(dpi = 300)
 
+## choose to save figures on the hard drive or not
+redraw <- FALSE ## turn to TRUE for saving
+
+## create folder where figures will be saved
+if (redraw) {
+  dir.create("figures")
+}
+
 ## figure 1
-dir.create("figures")
 figure1(data_all)
-ggsave("figures/fig1.pdf", width = 19, height = 12, units = "cm")
-ggsave("figures/fig1.png", width = 19, height = 12, units = "cm")
+if (redraw) {
+  ggsave("figures/fig1.pdf", width = 19, height = 12, units = "cm")
+  ggsave("figures/fig1.png", width = 19, height = 12, units = "cm")
+}
 
+## figure 2
 figure2(data_all)
-ggsave("figures/fig2.pdf", width = 19, height = 15, units = "cm")
-ggsave("figures/fig2.png", width = 19, height = 15, units = "cm")
+if (redraw) {
+  ggsave("figures/fig2.pdf", width = 19, height = 15, units = "cm")
+  ggsave("figures/fig2.png", width = 19, height = 15, units = "cm")
+}
 
+## figure 3
 figure3(data_all, data_model)
-ggsave("figures/fig3.pdf", width = 19, height = 9, units = "cm")
-ggsave("figures/fig3.png", width = 19, height = 9, units = "cm")
+if (redraw) {
+  ggsave("figures/fig3.pdf", width = 19, height = 9, units = "cm")
+  ggsave("figures/fig3.png", width = 19, height = 9, units = "cm")
+}
 
 # Tables ----------------------------------------------------------------------------------------
 
