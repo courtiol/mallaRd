@@ -59,6 +59,10 @@ tibble::as_tibble
 #' @export
 spaMM::fitme
 
+#' @importFrom spaMM fixef
+#' @export
+spaMM::fixef
+
 ### From ggplot2
 
 #' @importFrom ggplot2 ggsave

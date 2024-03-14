@@ -13,6 +13,7 @@
 #' @param boot.repl the number of bootstrap replicates
 #' @param data the dataframe containing the data used by the function
 #' @param data_model the dataframe containing the data used for model fitting
+#' @param digits the number of digits to display
 #' @param filtering whether or not to apply filters on the data
 #' @param fit a fitted model
 #' @param fit_null a fitted model more simple than the other fit it is compared to
@@ -28,7 +29,7 @@
 #' @param rawdata the data frame containing the raw data
 #' @param seed the seed to be used for bootstrapping
 #' @param threshold_distance_m a number specifying the maximum distance between two spatial points belonging to the same group
-#' @param x a vector
+#' @param x a vector or a scalar
 #' @param xlab the name for the x-axis
 #' @param ymax a vector defining the maximal values along the y axis (plot per plot)
 NULL

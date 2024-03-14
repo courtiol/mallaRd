@@ -529,6 +529,12 @@ best_fit
 ## for developer only: save the created data into the package
 # usethis::use_data(best_fit, overwrite = TRUE)
 
+## refit PQL for more accurate random effects
+best_fit_PQL <- fitme(as.formula(best_formula),
+                      data = data_model,
+                      family = stats::binomial(link = "logit"),
+                      method = "PQL")
+
 ### test of overall model
 ## NOTE: this takes ca. 60 sec using 100 CPUs
 ## turn doboot to TRUE to run and do adjust ncpus to your system
@@ -568,13 +574,12 @@ if (doboot) {
 ## turn doboot to TRUE to run and do adjust ncpus to your system
 doboot <- FALSE
 if (doboot) {
-  best_fit_REML <- update(best_fit, method = "PQL")
   fit_no_random <- update(best_fit, . ~ . - (1|individual_ID) - (1|location_ID), method = "PQL")
-  test_random <- compute_LRT(best_fit_REML, fit_no_random, ncpus = 100)
+  test_random <- compute_LRT(best_fit_PQL, fit_no_random, ncpus = 100)
   test_random
 #  ======== Bootstrap: ========
 # Raw simulated p-value: 0.000999
-2*(logLik(best_fit_REML) - logLik(fit_no_random)) ## LRT
+2*(logLik(best_fit_PQL) - logLik(fit_no_random)) ## LRT
 # 27.07088
 }
 
@@ -661,17 +666,17 @@ mean(data_model$populationdensity500_previous, na.rm = TRUE)
 sd(data_model$populationdensity500_previous, na.rm = TRUE)
 # 58.08383
 
-beta_popdens_z <- spaMM::fixef(best_fit)["populationdensity500_previous_z"]
-OR_popdens_z <- exp(beta_popdens_z) ## odds ratio
+### Odds ratio when adding 100 humans / hectare (mind the z transformation)
+beta_popdens_z <- fixef(best_fit)["populationdensity500_previous_z"]
+effect_popdens <- beta_popdens_z*100/attr(data_model$populationdensity500_previous_z, "sd")
+OR_popdens_z <- exp(effect_popdens) ## odds ratio +100
 OR_popdens_z
-# 0.6524002
+# 0.479356
 SE_popdens_z <- sqrt(vcov(best_fit)["populationdensity500_previous_z", "populationdensity500_previous_z"])
-exp(qnorm(0.025, mean = beta_popdens_z, sd = SE_popdens_z))
-# 0.4231685
-exp(qnorm(0.975, mean = beta_popdens_z, sd = SE_popdens_z))
-# 1.005807
-attr(data_model$populationdensity500_previous_z, "sd")
-# 58.08383
+exp(qnorm(0.025, mean = effect_popdens, sd = SE_popdens_z)) ## lower CI boundary
+# 0.3109263
+exp(qnorm(0.975, mean = effect_popdens, sd = SE_popdens_z)) ## upper CI boundary
+# 0.7390246
 
 ### test of previous breeding success
 ## NOTE: this takes ca. 60 sec using 100 CPUs
@@ -727,46 +732,61 @@ if (doboot) {
 ### describing effect of relocation distance (for full data, not using previous)
 sum(!is.na(data_all_known$relocation_distance))
 # [1] 1192
-range(data_all_known$relocation_distance, na.rm = TRUE)
-# [1] 30.98786 37386.42255
 mean(data_all_known$relocation_distance, na.rm = TRUE)
 # [1] 2420.263
 sd(data_all_known$relocation_distance, na.rm = TRUE)
 # [1] 3738.127
+range(data_all_known$relocation_distance, na.rm = TRUE)
+# [1] 30.98786 37386.42255
+sum(data_all_known$relocation_distance[!is.na(data_all_known$relocation_distance)] < 5000)
+# [1] 1072
+mean(data_all_known$relocation_distance[!is.na(data_all_known$relocation_distance)] < 5000)
+# [1] 0.8993289
+sum(data_all_known$relocation_distance[!is.na(data_all_known$relocation_distance)] > 10000)
+# [1] 77
+mean(data_all_known$relocation_distance[!is.na(data_all_known$relocation_distance)] > 10000)
+# [1] 0.06459732
 
 sum(!is.na(data_model$relocation_distance_previous))
 # [1] 301
-range(data_model$relocation_distance_previous)
-# [1] 82.12002 30905.78841
 mean(data_model$relocation_distance_previous)
 # [1] 2172.022
 sd(data_model$relocation_distance_previous)
 # [1] 3299.925
+range(data_model$relocation_distance_previous)
+# [1] 82.12002 30905.78841
+sum(data_model$relocation_distance_previous < 5000)
+# [1] 280
+mean(data_model$relocation_distance_previous < 5000)
+# [1] 0.9302326
+sum(data_model$relocation_distance_previous > 10000)
+# [1] 14
+mean(data_model$relocation_distance_previous > 10000)
+# [1] 0.04651163
 
-beta_reloc_z <- spaMM::fixef(best_fit)["relocation_distance_previous_z"]
-OR_reloc_z <- exp(beta_reloc_z) ## odds ratio
+### Odds ratio when adding 5 km (mind the z transformation)
+beta_reloc_z <- fixef(best_fit)["relocation_distance_previous_z"]
+effect_reloc <- beta_reloc_z*5000/attr(data_model$relocation_distance_previous_z, "sd")
+OR_reloc_z <- exp(effect_reloc) ## odds ratio for 5 km
 OR_reloc_z
-# 0.7313277
+#  0.62245
 SE_reloc_z <- sqrt(vcov(best_fit)["relocation_distance_previous_z", "relocation_distance_previous_z"])
-exp(qnorm(0.025, mean = beta_reloc_z, sd = SE_reloc_z))
-# [1] 0.506825
-exp(qnorm(0.975, mean = beta_reloc_z, sd = SE_reloc_z))
-# [1] 1.055276
-attr(data_model$relocation_distance_previous_z, "sd")
-# [1] 3299.925
+exp(qnorm(0.025, mean = effect_reloc, sd = SE_reloc_z)) ## lower CI
+# [1] 0.4313705
+exp(qnorm(0.975, mean = effect_reloc, sd = SE_reloc_z)) ## upper CI
+# [1] 0.8981699
 
 ### test random effect of individual
 ## NOTE: this takes ca. 60 sec using 100 CPUs
 ## turn doboot to TRUE to run and do adjust ncpus to your system
 doboot <- FALSE
 if (doboot) {
-  best_fit_REML <- update(best_fit, method = "PQL")
-  fit_no_ID <- update(best_fit_REML, . ~ . - (1|individual_ID))
-  test_ID <- compute_LRT(best_fit_REML, fit_no_ID, ncpus = 100)
+  fit_no_ID <- update(best_fit_PQL, . ~ . - (1|individual_ID))
+  test_ID <- compute_LRT(best_fit_PQL, fit_no_ID, ncpus = 100)
   test_ID
 # ======== Bootstrap: ========
 # Raw simulated p-value: 0.000999
-2*(logLik(best_fit_REML) - logLik(fit_no_ID)) ## LRT
+2*(logLik(best_fit_PQL) - logLik(fit_no_ID)) ## LRT
 # 10.46622
 }
 
@@ -775,12 +795,12 @@ if (doboot) {
 ## turn doboot to TRUE to run and do adjust ncpus to your system
 doboot <- FALSE
 if (doboot) {
-  fit_no_loc <- update(best_fit_REML, . ~ . - (1|location_ID))
-  test_loc <- compute_LRT(best_fit_REML, fit_no_loc, ncpus = 100)
+  fit_no_loc <- update(best_fit_PQL, . ~ . - (1|location_ID))
+  test_loc <- compute_LRT(best_fit_PQL, fit_no_loc, ncpus = 100)
   test_loc
 # ======== Bootstrap: ========
 # Raw simulated p-value: 0.000999
-2*(logLik(best_fit_REML) - logLik(fit_no_loc)) ## LRT
+2*(logLik(best_fit_PQL) - logLik(fit_no_loc)) ## LRT
 # 14.59554
 }
 
@@ -822,6 +842,26 @@ if (redraw) {
 # Tables ----------------------------------------------------------------------------------------
 
 ## Table 2 stats
+
+### estimates fixed effects
+pretty(cbind(estimate = fixef(best_fit), Cond.SE = sqrt(diag(vcov(best_fit)))))
+#                                   estimate Cond.SE
+# (Intercept)                          0.235   0.441
+# habitat_type_previouscourtyard      -0.243   0.528
+# habitat_type_previousother          -0.565    1.56
+# habitat_type_previousroof_terrace   0.0198   0.459
+# PSW1000_previousyes                -0.0223   0.407
+# trafficvolume2000_previous_z        -0.127   0.220
+# populationdensity500_previous_z     -0.427   0.221
+# brood_size_previous_z                0.119   0.177
+# delta_seasonsame breeding season     0.786   0.446
+# relocation_distance_previous_z      -0.313   0.187
+
+### estimates random effects
+pretty(cbind(lambda = c(best_fit_PQL$lambda)))
+#            lambda
+# individua.   1.12
+# location_.   13.3
 
 ### breeding events for recaptured individuals
 nrow(data_model)

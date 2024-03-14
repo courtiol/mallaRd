@@ -7,7 +7,7 @@
 howmany(x)
 }
 \arguments{
-\item{x}{a vector}
+\item{x}{a vector or a scalar}
 }
 \value{
 the number of elements

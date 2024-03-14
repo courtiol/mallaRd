@@ -67,4 +67,29 @@ distance2points_vec <- Vectorize(distance2points) ## vectorised version of the f
 #'
 howmany <- function(x) {
   length(unique(x[!is.na(x)]))
+}
+
+#' Print numbers keeping a certain amount of significant digits
+#'
+#' @inheritParams arguments
+#'
+#' @return a nicely displayed number
+#' @export
+#'
+pretty <- function(x, digits = 3) {
+
+  if (is.character(x) || is.factor(x)) return(x)
+
+  if (inherits(x, "matrix") || inherits(x, "data.frame")) {
+    res <- do.call("data.frame", lapply(as.data.frame(x), \(x) pretty(x, digits = digits)))
+    rownames(res) <- rownames(x)
+    return(res)
   }
+
+  names <- names(x)
+  format <- paste0("%#.", digits, "g")
+  res <- sprintf(format, signif(x, digits = digits))
+  names(res) <- names
+  res
+}
+

@@ -16,6 +16,7 @@
 \alias{where}
 \alias{as_tibble}
 \alias{fitme}
+\alias{fixef}
 \alias{ggsave}
 \title{Objects exported from other packages}
 \keyword{internal}
@@ -28,7 +29,7 @@ below to see their documentation.
 
   \item{ggplot2}{\code{\link[ggplot2]{ggsave}}}
 
-  \item{spaMM}{\code{\link[spaMM]{fitme}}}
+  \item{spaMM}{\code{\link[spaMM]{fitme}}, \code{\link[spaMM:extractors]{fixef}}}
 
   \item{tibble}{\code{\link[tibble]{as_tibble}}}
 }}

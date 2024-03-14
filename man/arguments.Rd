@@ -12,6 +12,8 @@
 
 \item{data_model}{the dataframe containing the data used for model fitting}
 
+\item{digits}{the number of digits to display}
+
 \item{filtering}{whether or not to apply filters on the data}
 
 \item{fit}{a fitted model}
@@ -42,7 +44,7 @@
 
 \item{threshold_distance_m}{a number specifying the maximum distance between two spatial points belonging to the same group}
 
-\item{x}{a vector}
+\item{x}{a vector or a scalar}
 
 \item{xlab}{the name for the x-axis}
 
