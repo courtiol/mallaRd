@@ -832,6 +832,31 @@
 #' # 8 null model                    399.  399.  0.00   20.7       43.0
 #'
 #'
+#' # Discussion ------------------------------------------------------------------------------------
+#'
+#' ## Duck that returned the most
+#' ID_max_return <- names(which.max(table(data_all_known$individual_ID)))
+#'
+#' ### Number of returns
+#' sum(data_all_known$individual_ID == ID_max_return)
+#' # [1] 13
+#'
+#' ### Number of years
+#' range(data_all_known$date[data_all_known$individual_ID == ID_max_return])
+#' # [1] "2012-06-18" "2020-07-06" # 9 years
+#'
+#' ### Most used site for the duck
+#' location_max_return <- names(which.max(table(data_all_known$location_ID[data_all_known$individual_ID == ID_max_return])))
+#'
+#' #### Which type of habitat was it?
+#' unique(data_all_known$habitat_type[data_all_known$individual_ID == ID_max_return & data_all_known$location_ID == location_max_return])
+#' # [1] courtyard
+#'
+#' #### How often this site was used by this duck?
+#' length(data_all_known$habitat_type[data_all_known$individual_ID == ID_max_return & data_all_known$location_ID == location_max_return])
+#' # [1] 12
+#'
+#'
 #' # Figures ---------------------------------------------------------------------------------------
 #'
 #' ## choose to save figures on the hard drive or not
@@ -909,3 +934,4 @@
 #'
 #'
 "_PACKAGE"
+
