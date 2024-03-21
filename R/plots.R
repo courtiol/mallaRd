@@ -294,7 +294,7 @@ subfigure4 <- function(data_model, fit, predictor,  fn = identity, xlab = "", ..
 figure4 <- function(data_model, fit, ...) {
   p1 <- subfigure4(data_model, fit = best_fit,
                    predictor = "populationdensity500_previous_z",
-                   xlab = "Human pop density (/ha)", ...)
+                   xlab = "Human pop density (in/ha)", ...)
   p2 <- subfigure4(data_model, fit = best_fit,
                    predictor = "relocation_distance_previous_z",
                    xlab = "Relocation distance (km)",
@@ -304,8 +304,8 @@ figure4 <- function(data_model, fit, ...) {
 
   p3 <- ggplot2::ggplot(pred) +
     ggplot2::aes(x = .data$focal_var, y = .data$pointp) +
-    ggplot2::geom_col(colour = "darkred", fill = NA, size = 1.3) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$low, ymax = .data$up), colour = "darkgrey", width = 0.1) +
+    ggplot2::geom_point(colour = "darkred", fill = NA, size = 3) +
     theme1 +
     ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0), "cm")) +
     ggplot2::scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.1), name = "\n P(return)", expand = c(0, 0)) +
