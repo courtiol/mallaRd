@@ -457,37 +457,6 @@
 #' # populationdensity500_previous_z+brood_size_previous_z+delta_season+relocation_distance_previous_z+
 #' # (1|individual_ID)+(1|location_ID)+1"
 #'
-#' ### alternative proxies retained among best models
-#' fitting_results |>
-#'   filter(.data$logLik >= (max(.data$logLik) - qchisq(0.95, df = 1, lower.tail = TRUE)/2)) -> top_models
-#'  nrow(top_models)
-#'  # [1] 18
-#'
-#'  top_models |>
-#'   select("formula") |>
-#'   mutate(DNSW =                  grepl("DNSW", .data$formula),
-#'          PSW1000 =               grepl("PSW1000", .data$formula),
-#'          PSW2000 =               grepl("PSW2000", .data$formula),
-#'          trafficvolume500 =      grepl("trafficvolume500", .data$formula),
-#'          trafficvolume1000 =     grepl("trafficvolume1000", .data$formula),
-#'          trafficvolume2000 =     grepl("trafficvolume2000", .data$formula),
-#'          populationdensity500 =  grepl("populationdensity500", .data$formula),
-#'          populationdensity1000 = grepl("populationdensity1000", .data$formula),
-#'          populationdensity2000 = grepl("populationdensity2000", .data$formula)) |>
-#'    select(-"formula") |>
-#'    summarise(across(everything(), any)) |> t()
-#' #                        [,1]
-#' # DNSW                   TRUE
-#' # PSW1000                TRUE
-#' # PSW2000                TRUE
-#' # trafficvolume500       TRUE
-#' # trafficvolume1000      TRUE
-#' # trafficvolume2000      TRUE
-#' # populationdensity500   TRUE
-#' # populationdensity1000  TRUE
-#' # populationdensity2000 FALSE
-#'
-#'
 #' ### best fit
 #' best_fit <- fitme(as.formula(best_formula),
 #'                   data = data_model,
@@ -527,6 +496,42 @@
 #'
 #' ## for developer only: save the created data into the package
 #' # usethis::use_data(best_fit, overwrite = TRUE)
+#'
+#'
+#' ### comparison to alternative parameterisations
+#' fit_comparison <- compare_fits(fitting_results, data = data_model, ncpus = 100)
+#'
+#'
+#' ### alternative proxies retained among best models
+#' fit_comparison |>
+#'   filter(.data$p >= 0.05) -> top_models
+#'  nrow(top_models)
+#'  # [1] 18
+#'
+#'  top_models |>
+#'   select("formula") |>
+#'   mutate(DNSW =                  grepl("DNSW", .data$formula),
+#'          PSW1000 =               grepl("PSW1000", .data$formula),
+#'          PSW2000 =               grepl("PSW2000", .data$formula),
+#'          trafficvolume500 =      grepl("trafficvolume500", .data$formula),
+#'          trafficvolume1000 =     grepl("trafficvolume1000", .data$formula),
+#'          trafficvolume2000 =     grepl("trafficvolume2000", .data$formula),
+#'          populationdensity500 =  grepl("populationdensity500", .data$formula),
+#'          populationdensity1000 = grepl("populationdensity1000", .data$formula),
+#'          populationdensity2000 = grepl("populationdensity2000", .data$formula)) |>
+#'    select(-"formula") |>
+#'    summarise(across(everything(), any)) |> t()
+#' #                        [,1]
+#' # DNSW                   TRUE
+#' # PSW1000                TRUE
+#' # PSW2000                TRUE
+#' # trafficvolume500       TRUE
+#' # trafficvolume1000      TRUE
+#' # trafficvolume2000      TRUE
+#' # populationdensity500   TRUE
+#' # populationdensity1000  TRUE
+#' # populationdensity2000  TRUE
+#'
 #'
 #' ## refit PQL for more accurate random effects
 #' best_fit_PQL <- fitme(as.formula(best_formula),
@@ -700,8 +705,8 @@
 #' doboot <- FALSE
 #' if (doboot) {
 #'   fit_no_season <- update(best_fit, . ~ . - delta_season)
-#'   test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100)
-#'   test_season ## NB: significant for other seeds than default one
+#'   test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100, boot.repl = 100000)
+#'   test_season ## NB: significant for other seeds at 1000 bootstraps, hence 100000
 #' #      chi2_LR df    p_value
 #' # p_v 3.973929  1 0.04620983
 #' #  ======== Bootstrap: ========
@@ -710,6 +715,7 @@
 #' #      chi2_LR df    p_value
 #' # p_v 3.846168  1 0.04985977
 #' }
+#'
 #'
 #' ### test of relocation distance
 #' ## NOTE: this takes ca. 60 sec using 100 CPUs
@@ -805,32 +811,24 @@
 #'
 #' ## Comparing predictive power
 #'
-#' summarize_fit(best_fit, method = "PQL/L")
-#' # # A tibble: 8 × 6
-#' #   model                         mAIC  cAIC  TjursD delta_mAIC delta_cAIC
-#' #   <fct>                         <chr> <chr> <chr>  <chr>      <chr>
-#' # 1 full model                    379.  359.  0.496  0.00       0.00
-#' # 2 fixed effects + location ID   379.  365.  0.302  0.506      5.97
-#' # 3 random effects                381.  366.  0.484  2.10       7.25
-#' # 4 location ID                   383.  370.  0.269  3.63       10.6
-#' # 5 fixed effects + individual ID 383.  371.  0.261  3.94       11.7
-#' # 6 individual ID                 386.  374.  0.233  7.22       15.5
-#' # 7 fixed effects                 389.  389.  0.0927 10.3       30.3
-#' # 8 null model                    399.  399.  0.00   20.4       40.4
-#'
-#' summarize_fit(best_fit, method = "PQL")
-#' # # A tibble: 8 × 6
-#' #   model                         mAIC  cAIC  TjursD delta_mAIC delta_cAIC
-#' #   <fct>                         <chr> <chr> <chr>  <chr>      <chr>
-#' # 1 fixed effects + location ID   379.  363.  0.333  0.00       7.09
-#' # 2 random effects                381.  366.  0.506  2.42       9.79
-#' # 3 fixed effects + individual ID 382.  369.  0.291  3.69       13.0
-#' # 4 location ID                   382.  369.  0.272  3.78       13.1
-#' # 5 full model                    384.  356.  0.719  4.84       0.00
-#' # 6 individual ID                 386.  374.  0.237  7.39       17.9
-#' # 7 fixed effects                 389.  389.  0.0927 10.6       32.9
-#' # 8 null model                    399.  399.  0.00   20.7       43.0
-#'
+#' summarize_fit(best_fit)
+# A tibble: 14 × 6
+#  model                                 mAIC  cAIC  TjursD delta_mAIC delta_cAIC
+#  <fct>                                 <chr> <chr> <chr>  <chr>      <chr>
+# 1 fixed effects + location ID (PQL)     379.  363.  0.333  0.00       7.09
+# 2 full model (PQL/L)                    379.  359.  0.496  0.277      2.59
+# 3 fixed effects + location ID (PQL/L)   379.  365.  0.302  0.783      8.56
+# 4 random effects (PQL/L)                381.  366.  0.484  2.38       9.84
+# 5 random effects (PQL)                  381.  366.  0.506  2.42       9.79
+# 6 fixed effects + individual ID (PQL)   382.  369.  0.291  3.69       13.0
+# 7 location ID (PQL)                     382.  369.  0.272  3.78       13.1
+# 8 location ID (PQL/L)                   383.  370.  0.269  3.90       13.2
+# 9 fixed effects + individual ID (PQL/L) 383.  371.  0.261  4.22       14.3
+# 0 full model (PQL)                      384.  356.  0.719  4.84       0.00
+# 1 individual ID (PQL)                   386.  374.  0.237  7.39       17.9
+# 2 individual ID (PQL/L)                 386.  374.  0.233  7.50       18.1
+# 3 fixed effects (PQL/L)                 389.  389.  0.0927 10.6       32.9
+# 4 null model (PQL/L)                    399.  399.  0.00   20.7       43.0
 #'
 #' # Discussion ------------------------------------------------------------------------------------
 #'
@@ -893,7 +891,7 @@
 #' }
 #'
 #' ## figure 4
-#' figure4(data_model, best_fit, re.form = NA)
+#' figure4(data_model, best_fit)
 #' if (redraw) {
 #'   showtext::showtext_opts(dpi = 300)
 #'   ggsave("figures/fig4.pdf", width = 19, height = 9, dpi = 300, units = "cm")

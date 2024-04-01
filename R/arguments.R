@@ -17,6 +17,8 @@
 #' @param digits the number of digits to display
 #' @param filtering whether or not to apply filters on the data
 #' @param fit a fitted model
+#' @param fit_alt an alternative fitted model to be compared to `best_fit`
+#' @param fits the table of fitted models produced by `fit()`
 #' @param fit_null a fitted model more simple than the other fit it is compared to
 #' @param fn a function to transform the value along the x-axis
 #' @param formulas the dataframe of formulas created with `prepare_formulas()`

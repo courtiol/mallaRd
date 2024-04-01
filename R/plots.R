@@ -292,10 +292,10 @@ subfigure4 <- function(data_model, fit, predictor,  fn = identity, xlab = "", ..
 #' figure4(data_model, best_fit)
 #'
 figure4 <- function(data_model, fit, ...) {
-  p1 <- subfigure4(data_model, fit = best_fit,
+  p1 <- subfigure4(data_model, fit = fit,
                    predictor = "populationdensity500_previous_z",
                    xlab = "Human pop density (in/ha)", ...)
-  p2 <- subfigure4(data_model, fit = best_fit,
+  p2 <- subfigure4(data_model, fit = fit,
                    predictor = "relocation_distance_previous_z",
                    xlab = "Relocation distance (km)",
                    fn = \(x) x/1000, ...)

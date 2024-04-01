@@ -20,6 +20,10 @@
 
 \item{fit}{a fitted model}
 
+\item{fit_alt}{an alternative fitted model to be compared to \code{best_fit}}
+
+\item{fits}{the table of fitted models produced by \code{fit()}}
+
 \item{fit_null}{a fitted model more simple than the other fit it is compared to}
 
 \item{fn}{a function to transform the value along the x-axis}

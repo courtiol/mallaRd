@@ -701,8 +701,8 @@ if (doboot) {
 doboot <- FALSE
 if (doboot) {
   fit_no_season <- update(best_fit, . ~ . - delta_season)
-  test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100)
-  test_season ## NB: significant for other seeds than default one
+  test_season <- compute_LRT(best_fit, fit_no_season, ncpus = 100, boot.repl = 100000)
+  test_season ## NB: significant for other seeds at 1000 bootstraps, hence 100000
 #      chi2_LR df    p_value
 # p_v 3.973929  1 0.04620983
 #  ======== Bootstrap: ========
@@ -711,6 +711,7 @@ if (doboot) {
 #      chi2_LR df    p_value
 # p_v 3.846168  1 0.04985977
 }
+
 
 ### test of relocation distance
 ## NOTE: this takes ca. 60 sec using 100 CPUs
