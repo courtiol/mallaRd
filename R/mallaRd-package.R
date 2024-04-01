@@ -499,7 +499,15 @@
 #'
 #'
 #' ### comparison to alternative parameterisations
-#' fit_comparison <- compare_fits(fitting_results, data = data_model, ncpus = 100)
+#' ## NOTE: this takes several minutes using 100 CPUs
+#' ## turn doboot to TRUE to run and do adjust ncpus to your system
+#' doboot <- FALSE
+#' if (doboot) {
+#'  fit_comparison <- compare_fits(fitting_results, data = data_model, ncpus = 100)
+#'
+#'  ## for developer only: save the created data into the package
+#'  # usethis::use_data(fit_comparison, overwrite = TRUE)
+#' }
 #'
 #'
 #' ### alternative proxies retained among best models
@@ -812,23 +820,23 @@
 #' ## Comparing predictive power
 #'
 #' summarize_fit(best_fit)
-# A tibble: 14 × 6
-#  model                                 mAIC  cAIC  TjursD delta_mAIC delta_cAIC
-#  <fct>                                 <chr> <chr> <chr>  <chr>      <chr>
-# 1 fixed effects + location ID (PQL)     379.  363.  0.333  0.00       7.09
-# 2 full model (PQL/L)                    379.  359.  0.496  0.277      2.59
-# 3 fixed effects + location ID (PQL/L)   379.  365.  0.302  0.783      8.56
-# 4 random effects (PQL/L)                381.  366.  0.484  2.38       9.84
-# 5 random effects (PQL)                  381.  366.  0.506  2.42       9.79
-# 6 fixed effects + individual ID (PQL)   382.  369.  0.291  3.69       13.0
-# 7 location ID (PQL)                     382.  369.  0.272  3.78       13.1
-# 8 location ID (PQL/L)                   383.  370.  0.269  3.90       13.2
-# 9 fixed effects + individual ID (PQL/L) 383.  371.  0.261  4.22       14.3
-# 0 full model (PQL)                      384.  356.  0.719  4.84       0.00
-# 1 individual ID (PQL)                   386.  374.  0.237  7.39       17.9
-# 2 individual ID (PQL/L)                 386.  374.  0.233  7.50       18.1
-# 3 fixed effects (PQL/L)                 389.  389.  0.0927 10.6       32.9
-# 4 null model (PQL/L)                    399.  399.  0.00   20.7       43.0
+#' # A tibble: 14 × 6
+#' #  model                                 mAIC  cAIC  TjursD delta_mAIC delta_cAIC
+#' #  <fct>                                 <chr> <chr> <chr>  <chr>      <chr>
+#' # 1 fixed effects + location ID (PQL)     379.  363.  0.333  0.00       7.09
+#' # 2 full model (PQL/L)                    379.  359.  0.496  0.277      2.59
+#' # 3 fixed effects + location ID (PQL/L)   379.  365.  0.302  0.783      8.56
+#' # 4 random effects (PQL/L)                381.  366.  0.484  2.38       9.84
+#' # 5 random effects (PQL)                  381.  366.  0.506  2.42       9.79
+#' # 6 fixed effects + individual ID (PQL)   382.  369.  0.291  3.69       13.0
+#' # 7 location ID (PQL)                     382.  369.  0.272  3.78       13.1
+#' # 8 location ID (PQL/L)                   383.  370.  0.269  3.90       13.2
+#' # 9 fixed effects + individual ID (PQL/L) 383.  371.  0.261  4.22       14.3
+#' # 0 full model (PQL)                      384.  356.  0.719  4.84       0.00
+#' # 1 individual ID (PQL)                   386.  374.  0.237  7.39       17.9
+#' # 2 individual ID (PQL/L)                 386.  374.  0.233  7.50       18.1
+#' # 3 fixed effects (PQL/L)                 389.  389.  0.0927 10.6       32.9
+#' # 4 null model (PQL/L)                    399.  399.  0.00   20.7       43.0
 #'
 #' # Discussion ------------------------------------------------------------------------------------
 #'

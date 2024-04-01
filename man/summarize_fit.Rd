@@ -4,12 +4,10 @@
 \alias{summarize_fit}
 \title{Compute stuff on the fit}
 \usage{
-summarize_fit(best_fit, method = "PQL/L", pretty = TRUE)
+summarize_fit(best_fit, pretty = TRUE)
 }
 \arguments{
 \item{best_fit}{the fit of the model with the best predictive power}
-
-\item{method}{the fitting method ("PQL/L" or "PQL"), see \link[spaMM:method]{spaMM::method}}
 
 \item{pretty}{whether or not to format the table for nice display}
 }

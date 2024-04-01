@@ -90,3 +90,18 @@ NULL
 #' best_fit
 #'
 NULL
+
+#' The comparison of alternative fits
+#'
+#' This object contains the output with the function [compare_fits()] as shown in `?mallaRd`.
+#'
+#' @name fit_comparison
+#' @docType data
+#' @format a `tibble` object produced by [compare_fits()]
+#' @references this study
+#' @keywords data
+#' @seealso [compare_fits()]
+#' @examples
+#' fit_comparison
+#'
+NULL
