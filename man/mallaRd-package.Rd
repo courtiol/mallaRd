@@ -900,7 +900,8 @@ if (redraw) {
 }
 
 ## figure 4
-figure4(data_model, best_fit)
+figure4(data_model, best_fit, level = qnorm(0.75), levels = NULL) # levels = NULL is there to prevent partial matching for level
+                                                                  # qnorm(0.75) for the so-called probable error
 if (redraw) {
   showtext::showtext_opts(dpi = 300)
   ggsave("figures/fig4.pdf", width = 19, height = 9, dpi = 300, units = "cm")
