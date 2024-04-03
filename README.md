@@ -7,9 +7,9 @@
 <!-- badges: end -->
 
 The goal of mallaRd is to reproduces the analyses and results from the
-paper “Housing search in the concrete jungle – breeding site selection
-of urban mallards and implications for conservation management
-strategies” by Engler et al. (in prep).
+paper “Housing search in the concrete jungle – breeding site fidelity of
+urban mallards and implications for conservation management strategies”
+by Engler et al. (in prep).
 
 ## Installation and usage
 
@@ -76,7 +76,7 @@ pkgs
 | Imports  | spaMM      | \*      | 4.4.23.1     |
 | Imports  | tibble     | \*      | 3.2.1        |
 | Imports  | tidyr      | \*      | 1.3.1        |
-| Imports  | tidyselect | \*      | 1.2.0        |
+| Imports  | tidyselect | \*      | 1.2.1        |
 | Suggests | desc       | \*      | 1.4.3        |
 | Suggests | doSNOW     | \*      | 1.0.20       |
 | Suggests | DHARMa     | \*      | 0.4.6        |
@@ -118,7 +118,7 @@ sessionInfo()
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] Matrix_1.6-5        gtable_0.3.4        dplyr_1.1.4        
-#>  [4] compiler_4.3.1      crayon_1.5.2        tidyselect_1.2.0   
+#>  [4] compiler_4.3.1      crayon_1.5.2        tidyselect_1.2.1   
 #>  [7] Rcpp_1.0.12         slam_0.1-50         parallel_4.3.1     
 #> [10] scales_1.3.0        boot_1.3-30         yaml_2.3.8         
 #> [13] fastmap_1.1.1       lattice_0.22-5      spaMM_4.4.23.1     
@@ -128,7 +128,7 @@ sessionInfo()
 #> [25] desc_1.4.3          munsell_0.5.0       minqa_1.2.6        
 #> [28] pillar_1.9.0        rlang_1.1.3         utf8_1.2.4         
 #> [31] xfun_0.42           registry_0.5-1      cli_3.6.2          
-#> [34] magrittr_2.0.3      digest_0.6.34       grid_4.3.1         
+#> [34] magrittr_2.0.3      digest_0.6.35       grid_4.3.1         
 #> [37] rstudioapi_0.15.0   pbapply_1.7-2       lifecycle_1.0.4    
 #> [40] nlme_3.1-164        vctrs_0.6.5         proxy_0.4-27       
 #> [43] evaluate_0.23       glue_1.7.0          numDeriv_2016.8-1.1
