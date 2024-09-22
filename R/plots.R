@@ -5,9 +5,9 @@ theme1 <- ggplot2::theme(legend.position = "none",
                          axis.text.x = ggplot2::element_text(size = 11),
                          axis.text.y.left = ggplot2::element_text(),
                          axis.text.y = ggplot2::element_text(),
-                         axis.line = ggplot2::element_line(colour = "black", size = 1),
+                         axis.line = ggplot2::element_line(colour = "black", linewidth = 1),
                          panel.background = ggplot2::element_blank(),
-                         panel.grid.major.y = ggplot2::element_line(size = .01, colour = "gray"),
+                         panel.grid.major.y = ggplot2::element_line(linewidth = .01, colour = "gray"),
                          panel.grid.minor.y = ggplot2::element_blank(),
                          panel.grid.major.x = ggplot2::element_blank(),
                          panel.grid.minor.x = ggplot2::element_blank(),
@@ -17,9 +17,9 @@ theme1 <- ggplot2::theme(legend.position = "none",
 theme2 <- ggplot2::theme(axis.title.x = ggplot2::element_blank(),
                          axis.title.y = ggplot2::element_text(size = 12),
                          axis.text.y.left = ggplot2::element_text(size = 11),
-                         axis.line = ggplot2::element_line(colour = "black", size = 1),
+                         axis.line = ggplot2::element_line(colour = "black", linewidth = 1),
                          panel.background = ggplot2::element_blank(),
-                         panel.grid.major.y = ggplot2::element_line(size = .01, colour = "gray"),
+                         panel.grid.major.y = ggplot2::element_line(linewidth = .01, colour = "gray"),
                          panel.grid.major.x = ggplot2::element_blank(),
                          panel.grid.minor.x = ggplot2::element_blank(),
                          legend.title = ggplot2::element_blank(),
@@ -322,7 +322,7 @@ figure4 <- function(data_model, fit, ...) {
 #' @export
 #'
 #' @examples
-#' figure5(best_fit)
+#' #figure5(best_fit)
 #'
 figure5 <- function(best_fit) {
 
@@ -337,7 +337,7 @@ figure5 <- function(best_fit) {
                    axis.text.x = ggplot2::element_blank()) +
     ggplot2::scale_fill_manual(values = c("darkred", "black", "grey", "white"),
                                limits = c('fixed+random', 'fixed', 'random', 'null model'), name = "model structure") +
-    ggplot2::labs(x = NULL, y = "ΔcAIC") -> plot_delta_cAIC
+    ggplot2::labs(x = NULL, y = "\u0394cAIC") -> plot_delta_cAIC
 
   summary_selected_fits |>
     ggplot2::ggplot(ggplot2::aes(.data$model, .data$delta_mAIC, fill = .data$group)) +
@@ -350,7 +350,7 @@ figure5 <- function(best_fit) {
     ggplot2::scale_fill_manual(values = c("darkred", "black", "grey", "white"),
                                limits = c('fixed+random', 'fixed', 'random', 'null model'),
                                name = "model structure") +
-    ggplot2::labs(x = NULL, y = "ΔmAIC") -> plot_delta_mAIC
+    ggplot2::labs(x = NULL, y = "\u0394mAIC") -> plot_delta_mAIC
 
   summary_selected_fits |>
     ggplot2::ggplot(ggplot2::aes(.data$model, .data$TjursD, fill = .data$group)) +

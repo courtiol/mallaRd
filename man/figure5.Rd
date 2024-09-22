@@ -13,6 +13,6 @@ figure5(best_fit)
 Build figure 5
 }
 \examples{
-figure5(best_fit)
+#figure5(best_fit)
 
 }
