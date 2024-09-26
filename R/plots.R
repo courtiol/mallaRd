@@ -31,16 +31,16 @@ theme2 <- ggplot2::theme(axis.title.x = ggplot2::element_blank(),
 globalVariables("density")
 
 
-#' Build figure 1
+#' Build figure S1
 #'
 #' @inheritParams arguments
 #'
 #' @export
 #'
 #' @examples
-#' figure1(data_all)
+#' figureS1(data_all)
 #'
-figure1 <- function(data, ymax = c(0.15, 0.20, 0.01, 0.06, 0.025)) {
+figureS1 <- function(data, ymax = c(0.15, 0.20, 0.01, 0.06, 0.025)) {
 
   data |>
     dplyr::filter(!is.na(.data$brood_size)) |>
@@ -123,16 +123,16 @@ figure1 <- function(data, ymax = c(0.15, 0.20, 0.01, 0.06, 0.025)) {
 }
 
 
-#' Build figure 2
+#' Build figure 1
 #'
 #' @inheritParams arguments
 #'
 #' @export
 #'
 #' @examples
-#' figure2(data_all)
+#' figure1(data_all)
 #'
-figure2 <- function(data) {
+figure1 <- function(data) {
 
   data |>
     dplyr::select("year", "habitat_type") |>
@@ -149,7 +149,7 @@ figure2 <- function(data) {
       labels = c("roof terrace", "balcony", "courtyard",  "other", "unknown")
     ) +
     ggplot2::scale_x_continuous(breaks = seq(2005, 2020, 1)) +
-    ggplot2::scale_y_continuous(breaks = seq(0, 0.55, 0.05), limits = c(0, 0.55)) +
+    ggplot2::scale_y_continuous(breaks = seq(0, 0.6, 0.1), limits = c(0, 0.6)) +
     ggplot2::guides(size = ggplot2::guide_legend(override.aes = list(colour = "gray31"))) +
     theme2 +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size = 11)) -> p1
@@ -188,7 +188,7 @@ figure2 <- function(data) {
       breaks = c("roof_terrace", "balcony", "courtyard",  "other", "unknown"),
       labels = c("roof terrace", "balcony", "courtyard",  "other", "unknown")
     ) +
-    ggplot2::scale_y_continuous(limits = c(0, 0.35), breaks = seq(0, 0.35, 0.05)) +
+    ggplot2::scale_y_continuous(limits = c(0, 0.4), breaks = seq(0, 0.4, 0.1)) +
     ggplot2::labs(x = "Type of breeding site", y = "Proportion") +
     theme2 +
     ggplot2::scale_fill_manual(values = c("darkred", "darkgrey")) -> p2
@@ -197,16 +197,16 @@ figure2 <- function(data) {
 }
 
 
-#' Build figure 3
+#' Build figure 2
 #'
 #' @inheritParams arguments
 #'
 #' @export
 #'
 #' @examples
-#' figure3(data_all, data_model)
+#' figure2(data_all, data_model)
 #'
-figure3 <- function(data, data_model) {
+figure2 <- function(data, data_model) {
 
   data |>
     dplyr::filter(!is.na(.data$ring_number)) |>
@@ -244,23 +244,23 @@ figure3 <- function(data, data_model) {
 }
 
 
-#' Build components of figure 4
+#' Build components of figure 3
 #'
 #' @inheritParams arguments
 #'
 #' @export
 #'
 #' @examples
-#' subfigure4(data_model, fit = best_fit,
+#' subfigure3(data_model, fit = best_fit,
 #'            predictor = "relocation_distance_previous_z",
 #'            xlab = "Relocation distance (m)")
 #'
-#' subfigure4(data_model, fit = best_fit,
+#' subfigure3(data_model, fit = best_fit,
 #'            predictor = "relocation_distance_previous_z",
 #'            xlab = "Relocation distance (km)",
 #'            fn = \(x) x/1000)
 #'
-subfigure4 <- function(data_model, fit, predictor,  fn = identity, xlab = "", ...) {
+subfigure3 <- function(data_model, fit, predictor,  fn = identity, xlab = "", ...) {
   pred <- spaMM::pdep_effects(fit, predictor, length.out = 100, ...)
   pred$focal_var <- fn(pred$focal_var * attr(data_model[[predictor]], "sd") + attr(data_model[[predictor]], "mean"))
 
@@ -282,20 +282,20 @@ subfigure4 <- function(data_model, fit, predictor,  fn = identity, xlab = "", ..
 }
 
 
-#' Build figure 4
+#' Build figure 3
 #'
 #' @inheritParams arguments
 #'
 #' @export
 #'
 #' @examples
-#' figure4(data_model, best_fit)
+#' figure3(data_model, best_fit)
 #'
-figure4 <- function(data_model, fit, ...) {
-  p1 <- subfigure4(data_model, fit = fit,
+figure3 <- function(data_model, fit, ...) {
+  p1 <- subfigure3(data_model, fit = fit,
                    predictor = "populationdensity500_previous_z",
                    xlab = "Human pop density (in/ha)", ...)
-  p2 <- subfigure4(data_model, fit = fit,
+  p2 <- subfigure3(data_model, fit = fit,
                    predictor = "relocation_distance_previous_z",
                    xlab = "Relocation distance (km)",
                    fn = \(x) x/1000, ...)
@@ -315,16 +315,16 @@ figure4 <- function(data_model, fit, ...) {
   print(p)
 }
 
-#' Build figure 5
+#' Build figure SX
 #'
 #' @inheritParams arguments
 #'
 #' @export
 #'
 #' @examples
-#' #figure5(best_fit)
+#' #figureSX(best_fit)
 #'
-figure5 <- function(best_fit) {
+figureSX <- function(best_fit) {
 
   summary_selected_fits <- summarize_fit(best_fit, pretty = FALSE)
 

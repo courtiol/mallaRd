@@ -4,17 +4,19 @@
 \alias{figure3}
 \title{Build figure 3}
 \usage{
-figure3(data, data_model)
+figure3(data_model, fit, ...)
 }
 \arguments{
-\item{data}{the dataframe containing the data used by the function}
-
 \item{data_model}{the dataframe containing the data used for model fitting}
+
+\item{fit}{a fitted model}
+
+\item{...}{addition arguments for internal functions}
 }
 \description{
 Build figure 3
 }
 \examples{
-figure3(data_all, data_model)
+figure3(data_model, best_fit)
 
 }

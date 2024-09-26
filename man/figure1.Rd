@@ -4,12 +4,10 @@
 \alias{figure1}
 \title{Build figure 1}
 \usage{
-figure1(data, ymax = c(0.15, 0.2, 0.01, 0.06, 0.025))
+figure1(data)
 }
 \arguments{
 \item{data}{the dataframe containing the data used by the function}
-
-\item{ymax}{a vector defining the maximal values along the y axis (plot per plot)}
 }
 \description{
 Build figure 1

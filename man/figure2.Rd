@@ -4,15 +4,17 @@
 \alias{figure2}
 \title{Build figure 2}
 \usage{
-figure2(data)
+figure2(data, data_model)
 }
 \arguments{
 \item{data}{the dataframe containing the data used by the function}
+
+\item{data_model}{the dataframe containing the data used for model fitting}
 }
 \description{
 Build figure 2
 }
 \examples{
-figure2(data_all)
+figure2(data_all, data_model)
 
 }
