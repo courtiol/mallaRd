@@ -77,7 +77,6 @@ howmany <- function(x) {
 #' @export
 #'
 pretty <- function(x, digits = 3) {
-
   if (is.character(x) || is.factor(x)) return(x)
 
   if (inherits(x, "matrix") || inherits(x, "data.frame")) {
