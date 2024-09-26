@@ -757,7 +757,9 @@
 #'
 #' ## Duck that returned the most
 #' ID_max_return <- names(which.max(table(data_all_known$individual_ID)))
-#'
+#' ID_max_return
+#' # "JC69668"
+#' 
 #' ### Number of returns
 #' sum(data_all_known$individual_ID == ID_max_return)
 #' # [1] 13
