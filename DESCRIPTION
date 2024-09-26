@@ -18,7 +18,6 @@ Imports:
     future,
     ggplot2,
     sf,
-    showtext,
     spaMM,
     tibble,
     tidyr,
@@ -27,10 +26,11 @@ RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
     desc,
+    devtools,
     doSNOW,
     DHARMa,
     spelling,
-    devtools,
+    showtext,
     knitr
 Language: en-US
 Depends: 
