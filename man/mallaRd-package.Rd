@@ -195,91 +195,6 @@ packageVersion("base")
 nrow(data_all)
 # [1] 1634
 
-### mean/sd clutch size
-mean(data_all$clutch_size, na.rm = TRUE)
-# [1] 8.650242
-
-sd(data_all$clutch_size, na.rm = TRUE)
-# [1] 2.293634
-
-### range clutch size
-range(data_all$clutch_size, na.rm = TRUE)
-# [1] 1 17
-
-### sample size for clutch size
-sum(!is.na(data_all$clutch_size)) # breeding events
-# [1] 1238
-howmany(data_all$ring_number[!is.na(data_all$clutch_size)]) # ducks
-# [1] 711
-
-### mean/sd brood size
-mean(data_all$brood_size, na.rm = TRUE)
-# [1] 6.979642
-sd(data_all$brood_size, na.rm = TRUE)
-# [1] 3.133681
-
-### range brood size
-range(data_all$brood_size, na.rm = TRUE)
-# [1] 1 15
-
-### sample size for brood size
-sum(!is.na(data_all$brood_size)) # breeding events
-# [1] 1621
-howmany(data_all$ring_number[!is.na(data_all$brood_size)]) # ducks
-# [1] 790
-
-### mean/sd body mass
-mean(data_all$body_mass_g, na.rm = TRUE)
-# [1] 817.4053
-sd(data_all$body_mass_g, na.rm = TRUE)
-# [1] 66.07133
-
-### range body mass
-range(data_all$body_mass_g, na.rm = TRUE)
-# [1]  520 1030
-
-### sample size for body mass
-sum(!is.na(data_all$body_mass_g)) # breeding events
-# [1] 1140
-howmany(data_all$ring_number[!is.na(data_all$body_mass_g)]) # ducks
-# [1] 754
-
-### mean/sd wing length
-mean(data_all$wing_length_mm, na.rm = TRUE)
-# [1] 264.4053
-sd(data_all$wing_length_mm, na.rm = TRUE)
-# [1] 7.605253
-
-### range wing length
-range(data_all$wing_length_mm, na.rm = TRUE)
-# [1] 226 287
-
-### sample size for wing length
-sum(!is.na(data_all$wing_length_mm)) # breeding events
-# [1] 1162
-howmany(data_all$ring_number[!is.na(data_all$wing_length_mm)]) # ducks
-# [1] 773
-
-### mean/sd hatching day of the year
-mean(data_all$hatch_doy, na.rm = TRUE)
-# [1] 146.5946
-as.Date("2019/01/01") + mean(data_all$hatch_doy, na.rm = TRUE)
-# "2020-05-27"
-as.Date("2020/01/01") + mean(data_all$hatch_doy, na.rm = TRUE) # leap year
-# "2020-05-26"
-sd(data_all$hatch_doy, na.rm = TRUE)
-# [1] 23.3779
-
-### range hatching day of the year
-range(data_all$hatch_doy, na.rm = TRUE)
-# [1] 61 207
-
-### sample size for hatching day of the year
-sum(!is.na(data_all$hatch_doy)) # breeding events
-# [1] 1411
-howmany(data_all$ring_number[!is.na(data_all$hatch_doy)]) # ducks
-# [1] 771
-
 
 # Results: 3.2 Type of breeding site ------------------------------------------------------------
 
@@ -875,42 +790,54 @@ if (redraw) {
 }
 
 
+## figure S1
+figureS1(data_all)
+if (redraw) {
+  showtext::showtext_opts(dpi = 300)
+  ggsave("figures/figS1.pdf", width = 19, height = 12, dpi = 300, units = "cm")
+  ggsave("figures/figS1.png", width = 19, height = 12, dpi = 300, units = "cm")
+}
+
 ## figure 1
 figure1(data_all)
 if (redraw) {
   showtext::showtext_opts(dpi = 300)
-  ggsave("figures/fig1.pdf", width = 19, height = 12, dpi = 300, units = "cm")
-  ggsave("figures/fig1.png", width = 19, height = 12, dpi = 300, units = "cm")
+  ggsave("figures/fig1.pdf", width = 19, height = 15, dpi = 300, units = "cm")
+  ggsave("figures/fig1.png", width = 19, height = 15, dpi = 300, units = "cm")
 }
 
 ## figure 2
-figure2(data_all)
+figure2(data_all, data_model)
 if (redraw) {
   showtext::showtext_opts(dpi = 300)
-  ggsave("figures/fig2.pdf", width = 19, height = 15, dpi = 300, units = "cm")
-  ggsave("figures/fig2.png", width = 19, height = 15, dpi = 300, units = "cm")
+  ggsave("figures/fig2.pdf", width = 19, height = 9, dpi = 300, units = "cm")
+  ggsave("figures/fig2.png", width = 19, height = 9, dpi = 300, units = "cm")
 }
 
 ## figure 3
-figure3(data_all, data_model)
+figure3(data_model, best_fit, level = qnorm(0.75), levels = NULL) # levels = NULL is there to prevent partial matching for level
+                                                                  # qnorm(0.75) for the so-called probable error
 if (redraw) {
   showtext::showtext_opts(dpi = 300)
   ggsave("figures/fig3.pdf", width = 19, height = 9, dpi = 300, units = "cm")
   ggsave("figures/fig3.png", width = 19, height = 9, dpi = 300, units = "cm")
 }
 
-## figure 4
-figure4(data_model, best_fit, level = qnorm(0.75), levels = NULL) # levels = NULL is there to prevent partial matching for level
-                                                                  # qnorm(0.75) for the so-called probable error
-if (redraw) {
-  showtext::showtext_opts(dpi = 300)
-  ggsave("figures/fig4.pdf", width = 19, height = 9, dpi = 300, units = "cm")
-  ggsave("figures/fig4.png", width = 19, height = 9, dpi = 300, units = "cm")
-}
-
 # Tables ----------------------------------------------------------------------------------------
 
-## Table 2 stats
+## Table 2
+
+### info on biometric parameters
+table_biometrics(data_all)
+#            parameter   mean_sd    range n_breedingevents n_adultfemales
+# 1        Clutch size 8.65±2.29     1-17             1238            711
+# 2         Brood size 6.98±3.13     1-15             1621            790
+# 3      Body mass (g) 817.±66.1 520-1030             1140            754
+# 4   Wing length (mm) 264.±7.61  226-287             1162            773
+# 5 Hatching day (doy) 147.±23.4   61-207             1411            771
+
+
+## Table 3
 
 ### estimates fixed effects
 pretty(cbind(estimate = fixef(best_fit), Cond.SE = sqrt(diag(vcov(best_fit)))))
