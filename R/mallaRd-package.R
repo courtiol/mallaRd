@@ -332,12 +332,16 @@
 #'  # 1 FALSE            89
 #'  # 2 TRUE             64
 #'
-#' ## stats for fig 3
+#' ## stats for fig 2
 #'
 #' ### breeding events from identified (ringed) ducks
 #' sum(!is.na(data_all_known$location_ID))
 #' # [1] 1194
 #'
+#' ### unique location for breeding events from identified (ringed) ducks
+#' length(unique(data_all_known$location_ID[!is.na(data_all_known$location_ID)]))
+#' # [1] 863 
+#' 
 #' ### total number of identified (ringed) ducks breeding at known locations
 #' howmany(data_all_known$individual_ID[!is.na(data_all_known$location_ID)])
 #' # [1] 794
@@ -345,6 +349,10 @@
 #' ### breeding events for recaptured individuals
 #' nrow(data_model)
 #' # [1] 301
+#' 
+#' ### unique location for breeding events from recaptured individuals
+#' length(unique(data_model$location_ID))
+#' # [1] 197
 #'
 #' ### number of recaptured individuals
 #' howmany(data_model$individual_ID)
