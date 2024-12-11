@@ -7,9 +7,9 @@
 <!-- badges: end -->
 
 The goal of mallaRd is to reproduces the analyses and results from the
-paper “Housing search in the concrete jungle – breeding site fidelity of
-urban mallards and implications for conservation management strategies”
-by Engler et al. (in prep).
+paper “Breeding site fidelity in the concrete jungle: implications for
+the management of urban mallards.” by Engler et al. (accepted in Journal
+of Urban Ecology).
 
 ## Installation and usage
 
