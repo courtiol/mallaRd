@@ -1,7 +1,7 @@
 Package: mallaRd
 Type: Package
 Title: Breeding output and breeding site fidelity of mallards in Berlin, Germany 
-Version: 0.1.0
+Version: 2024.12.11
 Authors@R: c(
     person("Alexandre", "Courtiol", email = "alexandre.courtiol@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-0637-2959")),
