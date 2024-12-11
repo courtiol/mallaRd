@@ -148,8 +148,12 @@ howmany(data_model$individual_ID)
 cor_matrix <- cor(data_model[,
   c("brood_size_previous_z",
     "relocation_distance_previous_z",
-    "trafficvolume500_previous_z", "trafficvolume1000_previous_z", "trafficvolume2000_previous_z",
-    "populationdensity500_previous_z","populationdensity1000_previous_z", "populationdensity2000_previous_z")])
+    "trafficvolume500_previous_z",
+    "trafficvolume1000_previous_z",
+    "trafficvolume2000_previous_z",
+    "populationdensity500_previous_z",
+    "populationdensity1000_previous_z",
+    "populationdensity2000_previous_z")])
 diag(cor_matrix) <- NA
 cor_matrix[c("trafficvolume500_previous_z",
              "trafficvolume1000_previous_z",
@@ -778,14 +782,17 @@ range(data_all_known$date[data_all_known$individual_ID == ID_max_return])
 # [1] "2012-06-18" "2020-07-06" # 9 years
 
 ### Most used site for the duck
-location_max_return <- names(which.max(table(data_all_known$location_ID[data_all_known$individual_ID == ID_max_return])))
+location_max_return <- names(which.max(table(
+  data_all_known$location_ID[data_all_known$individual_ID == ID_max_return])))
 
 #### Which type of habitat was it?
-unique(data_all_known$habitat_type[data_all_known$individual_ID == ID_max_return & data_all_known$location_ID == location_max_return])
+unique(data_all_known$habitat_type[data_all_known$individual_ID == ID_max_return &
+  data_all_known$location_ID == location_max_return])
 # [1] courtyard
 
 #### How often this site was used by this duck?
-length(data_all_known$habitat_type[data_all_known$individual_ID == ID_max_return & data_all_known$location_ID == location_max_return])
+length(data_all_known$habitat_type[data_all_known$individual_ID == ID_max_return &
+  data_all_known$location_ID == location_max_return])
 # [1] 12
 
 
@@ -825,8 +832,10 @@ if (redraw) {
 }
 
 ## figure 3
-figure3(data_model, best_fit, level = qnorm(0.75), levels = NULL) # levels = NULL is there to prevent partial matching for level
-                                                                  # qnorm(0.75) for the so-called probable error
+figure3(data_model, best_fit, level = qnorm(0.75), levels = NULL) # levels = NULL is there to prevent partial
+                                                                  #   matching for level
+                                                                  # qnorm(0.75) for the so-called
+                                                                  #   probable error
 if (redraw) {
   showtext::showtext_opts(dpi = 300)
   ggsave("figures/fig3.pdf", width = 19, height = 9, dpi = 300, units = "cm")
