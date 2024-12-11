@@ -6,7 +6,6 @@
 #' @export
 dplyr::across
 
-
 #' @importFrom dplyr arrange
 #' @export
 dplyr::arrange
@@ -47,11 +46,13 @@ dplyr::summarise
 #' @export
 dplyr::where
 
+
 ### From tibble
 
 #' @importFrom tibble as_tibble
 #' @export
 tibble::as_tibble
+
 
 ### From spaMM
 
@@ -62,6 +63,7 @@ spaMM::fitme
 #' @importFrom spaMM fixef
 #' @export
 spaMM::fixef
+
 
 ### From ggplot2
 

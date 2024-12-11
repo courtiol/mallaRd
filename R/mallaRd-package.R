@@ -1,11 +1,11 @@
 #' mallaRd: Breeding output and breeding site fidelity of mallards in Berlin, Germany
 #'
 #' This help page reproduces, in the section **Examples** the analyses and results from the paper
-#' "Housing search in the concrete jungle – breeding site selection of urban mallards and
-#' implications for conservation management strategies" by Engler et al.
+#' "Breeding site fidelity in the concrete jungle: implications for the management of urban mallards"
+#' by Engler et al. (accepted in Journal of Urban Ecology).
 #'
 #' All three datasets used in the workflow below are readily available after loading this package
-#' (`data_raw`, `data_all` and `data_model`) but the workflow below shows how we created such
+#' (`data_raw`, `data_all` and `data_model`), but the workflow below shows how we created such
 #' datasets starting from the raw data file stored in the subfolder extdata of this package.
 #'
 #' Note that the workflow relies on functions from other packages (e.g. \pkg{dplyr}), but we
@@ -17,7 +17,8 @@
 #' @aliases mallaRd-package mallaRd
 #' @keywords package
 #'
-#' @references reference will be added once the paper is published
+#' @references Breeding site fidelity in the concrete jungle: implications for the management of urban mallards (accepted).
+#' Engler M, Chavez R, Sens R, Lundberg M, Delor A, Rousset & Courtiol A. Journal of Urban Ecology.
 #'
 #' @examples
 #'
@@ -340,8 +341,8 @@
 #'
 #' ### unique location for breeding events from identified (ringed) ducks
 #' length(unique(data_all_known$location_ID[!is.na(data_all_known$location_ID)]))
-#' # [1] 863 
-#' 
+#' # [1] 863
+#'
 #' ### total number of identified (ringed) ducks breeding at known locations
 #' howmany(data_all_known$individual_ID[!is.na(data_all_known$location_ID)])
 #' # [1] 794
@@ -349,7 +350,7 @@
 #' ### breeding events for recaptured individuals
 #' nrow(data_model)
 #' # [1] 301
-#' 
+#'
 #' ### unique location for breeding events from recaptured individuals
 #' length(unique(data_model$location_ID))
 #' # [1] 197
@@ -767,7 +768,7 @@
 #' ID_max_return <- names(which.max(table(data_all_known$individual_ID)))
 #' ID_max_return
 #' # "JC69668"
-#' 
+#'
 #' ### Number of returns
 #' sum(data_all_known$individual_ID == ID_max_return)
 #' # [1] 13
@@ -835,7 +836,7 @@
 #' # Tables ----------------------------------------------------------------------------------------
 #'
 #' ## Table 2
-#' 
+#'
 #' ### info on biometric parameters
 #' table_biometrics(data_all)
 #' #            parameter   mean_sd    range n_breedingevents n_adultfemales
@@ -844,8 +845,8 @@
 #' # 3      Body mass (g) 817.±66.1 520-1030             1140            754
 #' # 4   Wing length (mm) 264.±7.61  226-287             1162            773
 #' # 5 Hatching day (doy) 147.±23.4   61-207             1411            771
-#' 
-#' 
+#'
+#'
 #' ## Table 3
 #'
 #' ### estimates fixed effects

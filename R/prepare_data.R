@@ -1,11 +1,11 @@
-#' Filtering and reformatting the data for statistical modeling
+#' Filtering and reformatting the data for statistical modelling
 #'
 #' This functions reformat the data so as to express predictors as differences between a capture
 #' event and the previous capture. It can also perform a series of data filtering steps. Check the
 #' body of the function to see all steps in details.
 #'
 #' @inheritParams arguments
-#' @return a dataframe with the data ready for modeling
+#' @return a dataframe with the data ready for modelling
 #' @export
 #'
 #' @examples

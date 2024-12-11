@@ -7,12 +7,12 @@
 \title{mallaRd: Breeding output and breeding site fidelity of mallards in Berlin, Germany}
 \description{
 This help page reproduces, in the section \strong{Examples} the analyses and results from the paper
-"Housing search in the concrete jungle – breeding site selection of urban mallards and
-implications for conservation management strategies" by Engler et al.
+"Breeding site fidelity in the concrete jungle: implications for the management of urban mallards"
+by Engler et al. (accepted in Journal of Urban Ecology).
 }
 \details{
 All three datasets used in the workflow below are readily available after loading this package
-(\code{data_raw}, \code{data_all} and \code{data_model}) but the workflow below shows how we created such
+(\code{data_raw}, \code{data_all} and \code{data_model}), but the workflow below shows how we created such
 datasets starting from the raw data file stored in the subfolder extdata of this package.
 
 Note that the workflow relies on functions from other packages (e.g. \pkg{dplyr}), but we
@@ -341,7 +341,7 @@ sum(!is.na(data_all_known$location_ID))
 
 ### unique location for breeding events from identified (ringed) ducks
 length(unique(data_all_known$location_ID[!is.na(data_all_known$location_ID)]))
-# [1] 863 
+# [1] 863
 
 ### total number of identified (ringed) ducks breeding at known locations
 howmany(data_all_known$individual_ID[!is.na(data_all_known$location_ID)])
@@ -880,7 +880,8 @@ howmany(data_model$individual_ID)
 
 }
 \references{
-reference will be added once the paper is published
+Breeding site fidelity in the concrete jungle: implications for the management of urban mallards (accepted).
+Engler M, Chavez R, Sens R, Lundberg M, Delor A, Rousset & Courtiol A. Journal of Urban Ecology.
 }
 \author{
 \strong{Maintainer}: Alexandre Courtiol \email{alexandre.courtiol@gmail.com} (\href{https://orcid.org/0000-0003-0637-2959}{ORCID})

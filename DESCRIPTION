@@ -7,7 +7,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-0637-2959")),
     person("Marc", "Engler", email = "mengler@nabu-berlin.de", role = "aut",
            comment = c(ORCID = "0000-0002-3461-0953")))
-Description: Reproduces the analyses and results from the paper "Housing search in the concrete jungle – breeding site selection of urban mallards and implications for conservation management strategies" by Engler et al. 
+Description: Reproduces the analyses and results from the paper "Breeding site fidelity in the concrete jungle: implications for the management of urban mallards" by Engler et al. (accepted in Journal of Urban Ecology).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -32,6 +32,6 @@ Suggests:
     spelling,
     showtext,
     knitr
-Language: en-US
+Language: en-GB
 Depends: 
     R (>= 2.10)
